@@ -14,7 +14,7 @@ $currentUserRole = "Admin";
 <?php include_once __DIR__ . '/../includes/header.php'; ?>
 
 <div class="container">
-<main class="main-content">
+<main class="admin-page">
     
     <div class="admin-panel">
 
