@@ -1,101 +1,273 @@
-/* style.css - Property Amenity Management System */
+/* ==========================================================
+   style.css - Property Amenity Management System
+   Complete CSS for Admin Layout + Dashboard + Forms + Tables
+   ========================================================== */
 
-/* Body layout */
-body {
-    font-family: Arial, sans-serif; /* Default font */
+/* -------------------- Global Reset -------------------- */
+* {
     margin: 0;
     padding: 0;
-    display: flex; /* Flex layout: sidebar + main content */
+    box-sizing: border-box;
 }
 
-/* Header styling */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* -------------------- Header -------------------- */
 header {
-    background: #2c3e50; /* Dark blue background */
-    color: white;         /* White text */
+    background: #2c3e50;   /* Dark blue background */
+    color: white;
     padding: 15px;
     text-align: center;
-    width: 100%;          /* Full width */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Slight shadow */
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
-/* Sidebar styling */
+/* -------------------- Layout Container -------------------- */
+.layout {
+    display: flex;
+    margin-top: 60px; /* push down below header */
+    flex: 1;
+    min-height: calc(100vh - 60px);
+}
+
+/* -------------------- Sidebar -------------------- */
 aside {
-    background: #34495e; /* Darker gray-blue */
+    background: #34495e;
     color: white;
-    width: 220px;        /* Fixed width */
-    min-height: 100vh;   /* Full height */
+    width: 220px;
+    min-height: calc(100vh - 60px);
     padding: 15px;
+    position: fixed;
+    right: 0;
+    top: 60px;
+    overflow-y: auto;
 }
 
-/* Sidebar title */
 aside h3 {
-    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding-bottom: 8px;
 }
 
-/* Sidebar list */
 aside ul {
-    list-style: none;    /* Remove bullets */
+    list-style: none;
     padding: 0;
 }
 
-/* Sidebar list items */
 aside ul li {
-    margin: 10px 0;
+    margin: 12px 0;
 }
 
-/* Sidebar links */
 aside ul li a {
     color: white;
     text-decoration: none;
+    display: block;
+    padding: 8px 10px;
+    border-radius: 4px;
+    transition: 0.2s;
 }
 
-/* Hover effect for links */
 aside ul li a:hover {
-    text-decoration: underline;
+    background: rgba(255,255,255,0.2);
 }
 
-/* Main content area */
-main {
-    flex: 1;             /* Fill remaining space */
+/* -------------------- Main Content Wrapper -------------------- */
+.admin-page {
+    flex: 1;
     padding: 20px;
+    margin-right: 220px; /* leave space for sidebar */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f4f4f4;
 }
 
-/* Footer styling */
+/* -------------------- Headings -------------------- */
+.admin-page h2 {
+    width: 100%;
+    max-width: 800px;
+    background: #2c3e50;
+    color: white;
+    padding: 15px;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* -------------------- Messages -------------------- */
+.form-message,
+.admin-page p.success,
+.admin-page p.error {
+    width: 100%;
+    max-width: 800px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.form-message.success,
+.admin-page p.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.form-message.error,
+.admin-page p.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* -------------------- Cards -------------------- */
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+}
+
+/* -------------------- Forms -------------------- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+form label {
+    font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form select {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+form button {
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+form button:hover {
+    background: #1a252f;
+}
+
+/* -------------------- Tables -------------------- */
+.admin-page table {
+    width: 100%;
+    max-width: 800px;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.admin-page table th,
+.admin-page table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.admin-page table th {
+    background: #2c3e50;
+    color: white;
+}
+
+.admin-page table tr:hover {
+    background: #f9f9f9;
+}
+
+.admin-page table td a {
+    text-decoration: none;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.admin-page table td a:hover {
+    color: #c0392b;
+}
+
+/* -------------------- Dashboard Cards -------------------- */
+.dashboard-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    justify-content: center;
+}
+
+.dashboard-cards .card {
+    flex: 1 1 200px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.dashboard-cards .card:hover {
+    transform: scale(1.05);
+}
+
+/* -------------------- Footer -------------------- */
 footer {
     background: #2c3e50;
     color: white;
     text-align: center;
     padding: 10px;
-    position: fixed;     /* Stick at bottom */
-    bottom: 0;
     width: 100%;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2); /* Slight shadow */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
 }
 
-/* Dashboard Layout */
-.main-content {
-    margin-left: 220px; /* leaves space for sidebar */
-    padding: 20px;
-    background: #f4f4f4;
-    min-height: 100vh;
-}
+/* -------------------- Responsive -------------------- */
+@media (max-width: 900px) {
+    aside {
+        position: fixed;
+        width: 180px;
+    }
 
-.dashboard-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
+    .admin-page {
+        margin-right: 180px;
+        padding: 15px;
+    }
 
-.card {
-    background: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    flex: 1 1 200px;
-    transition: transform 0.2s;
-}
+    .admin-page h2,
+    .card,
+    table {
+        max-width: 100%;
+    }
 
-.card:hover {
-    transform: scale(1.05);
+    .dashboard-cards {
+        flex-direction: column;
+        align-items: center;
+    }
 }
-
