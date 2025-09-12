@@ -34,21 +34,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<!-- -------------------- Main Flex Container -------------------- -->
+<!--  Main Flex Container -->
 <div class="main-content">
 
-    <!-- -------------------- Admin Panel -------------------- -->
-    <div class="admin-panel">
+    <!--  Admin Panel -->
+    <main class="admin-page">
         <h2>Add User</h2>
 
-        <!-- -------------------- Show success/error message -------------------- -->
+        <!--  Show success/error message-->
         <?php if ($message): ?>
         <div class="form-message <?= strpos($message,'✅')!==false ? 'success' : 'error' ?>">
             <?= htmlspecialchars($message) ?>
         </div>
         <?php endif; ?>
 
-        <!-- -------------------- User Form -------------------- -->
+        <!-- User Form -->
         <div class="card">
             <form method="POST">
                 <!-- Name input -->
@@ -79,10 +79,10 @@ include_once __DIR__ . '/../../includes/header.php';
                 <button type="submit">Add User</button>
             </form>
         </div>
-    </div>
 
-    <!-- -------------------- Sidebar -------------------- -->
+    <!-- Sidebar -->
     <?php include_once __DIR__ . '/../../includes/sidebar.php'; ?>
+</main>
 
 </div>
 
