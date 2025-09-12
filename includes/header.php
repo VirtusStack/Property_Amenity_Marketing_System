@@ -10,7 +10,9 @@
     <meta charset="UTF-8">
     <title>Property Amenity Management System</title>
     <!-- Link to external CSS -->
-    <link rel="stylesheet" href="../public/css/style.css">
+     <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/style.css">
+
+
 
 </head>
 <body>
