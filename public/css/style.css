@@ -1,9 +1,8 @@
-/* ==========================================================
-   style.css - Property Amenity Management System
-   Complete CSS for Admin Layout + Dashboard + Forms + Tables
-   ========================================================== */
+/*
+   Property Amenity Management System - Admin Layout
+   */
 
-/* -------------------- Global Reset -------------------- */
+/* -------------------- Reset -------------------- */
 * {
     margin: 0;
     padding: 0;
@@ -11,93 +10,125 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f9;
     color: #333;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    overflow-x: hidden; /* prevent horizontal scroll */
 }
 
 /* -------------------- Header -------------------- */
 header {
-    background: #2c3e50;   /* Dark blue background */
+    background: #2c3e50; /* dark header */
     color: white;
-    padding: 15px;
-    text-align: center;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
     width: 100%;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    position: relative;
+    position: fixed; /* fixed at top */
     top: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 1100;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* -------------------- Layout Container -------------------- */
+/* -------------------- Layout -------------------- */
 .layout {
     display: flex;
-    margin-top: 60px; /* push down below header */
-    flex: 1;
-    min-height: calc(100vh - 60px);
+    margin-top: 60px; /* content starts below header */
+    height: calc(100vh - 60px);
+    overflow: hidden; /* sidebar + content stay side by side */
 }
 
 /* -------------------- Sidebar -------------------- */
-aside {
-    background: #34495e;
-    color: white;
-    width: 220px;
-    min-height: calc(100vh - 60px);
-    padding: 15px;
-    position: fixed;
-    right: 0;
+.sidebar {
+    background: linear-gradient(180deg, #2c3e50, #34495e); /* dark gradient */
+    color: #ecf0f1;
+    width: 250px;
+    height: calc(100vh - 60px);
+    padding: 20px 15px;
+    position: fixed; /* fixed left */
+    left: 0;
     top: 60px;
-    overflow-y: auto;
+    overflow-y: auto; /* sidebar scrolls if long */
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    z-index: 1000;
 }
 
-aside h3 {
-    margin-bottom: 15px;
+.sidebar h3 {
     font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #f1f1f1;
+    letter-spacing: 0.5px;
     border-bottom: 1px solid rgba(255,255,255,0.2);
-    padding-bottom: 8px;
+    padding-bottom: 10px;
 }
 
-aside ul {
+.sidebar ul {
     list-style: none;
     padding: 0;
 }
 
-aside ul li {
-    margin: 12px 0;
-}
-
-aside ul li a {
-    color: white;
+.sidebar a {
+    color: #ecf0f1;
     text-decoration: none;
-    display: block;
-    padding: 8px 10px;
-    border-radius: 4px;
-    transition: 0.2s;
-}
-
-aside ul li a:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-/* -------------------- Main Content Wrapper -------------------- */
-.admin-page {
-    flex: 1;
-    padding: 20px;
-    margin-right: 220px; /* leave space for sidebar */
+    padding: 12px 14px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    background: #f4f4f4;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    transition: all 0.25s ease;
 }
 
-/* -------------------- Headings -------------------- */
+.sidebar a i {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.sidebar a:hover {
+    background: #1abc9c;
+    color: #fff;
+    transform: translateX(4px); /* nice slide effect */
+}
+
+.sidebar a.active {
+    background: #16a085;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Submenu inside sidebar */
+.sidebar ul ul li a {
+    font-size: 14px;
+    padding: 8px 10px;
+    background: #3b4c61;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.sidebar ul ul li a:hover {
+    background: #1abc9c;
+}
+
+/* -------------------- Main Content -------------------- */
+.admin-page {
+    margin-left: 250px; /* sidebar space */
+    padding: 80px 20px 20px 20px; /* top padding = 60px header + 20px spacing */
+    flex: 1;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    background: #f4f6f9;
+}
+
+
+/* Headings inside pages */
 .admin-page h2 {
-    width: 100%;
-    max-width: 800px;
     background: #2c3e50;
     color: white;
     padding: 15px;
@@ -106,84 +137,35 @@ aside ul li a:hover {
     text-align: center;
 }
 
-/* -------------------- Messages -------------------- */
-.form-message,
-.admin-page p.success,
-.admin-page p.error {
-    width: 100%;
-    max-width: 800px;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-align: center;
-}
-
-.form-message.success,
-.admin-page p.success {
-    background: #d4edda;
-    color: #155724;
-}
-
-.form-message.error,
-.admin-page p.error {
-    background: #f8d7da;
-    color: #721c24;
-}
-
 /* -------------------- Cards -------------------- */
 .card {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 800px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
-/* -------------------- Forms -------------------- */
-form {
+.dashboard-cards {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 100%;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
 }
 
-form label {
-    font-weight: bold;
+.dashboard-cards .card {
+    flex: 1 1 220px;
+    transition: transform 0.2s;
 }
 
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form select {
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 100%;
-}
-
-form button {
-    background: #2c3e50;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 15px;
-    transition: 0.2s;
-}
-
-form button:hover {
-    background: #1a252f;
+.dashboard-cards .card:hover {
+    transform: scale(1.05);
 }
 
 /* -------------------- Tables -------------------- */
 .admin-page table {
     width: 100%;
-    max-width: 800px;
     border-collapse: collapse;
     background: #fff;
     border-radius: 8px;
@@ -204,38 +186,38 @@ form button:hover {
     color: white;
 }
 
-.admin-page table tr:hover {
-    background: #f9f9f9;
+/* -------------------- Forms -------------------- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.admin-page table td a {
-    text-decoration: none;
-    color: #e74c3c;
+form label {
     font-weight: bold;
 }
 
-.admin-page table td a:hover {
-    color: #c0392b;
+form input,
+form select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
 }
 
-/* -------------------- Dashboard Cards -------------------- */
-.dashboard-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    width: 100%;
-    max-width: 1000px;
-    justify-content: center;
+form button {
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
 }
 
-.dashboard-cards .card {
-    flex: 1 1 200px;
-    text-align: center;
-    transition: transform 0.2s;
-}
-
-.dashboard-cards .card:hover {
-    transform: scale(1.05);
+form button:hover {
+    background: #1a252f;
 }
 
 /* -------------------- Footer -------------------- */
@@ -243,31 +225,29 @@ footer {
     background: #2c3e50;
     color: white;
     text-align: center;
-    padding: 10px;
-    width: 100%;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+    padding: 20px;
+    margin-top: auto;
 }
 
 /* -------------------- Responsive -------------------- */
 @media (max-width: 900px) {
-    aside {
-        position: fixed;
-        width: 180px;
+    .sidebar {
+        width: 200px;
     }
-
     .admin-page {
-        margin-right: 180px;
-        padding: 15px;
+        margin-left: 200px;
     }
+}
 
-    .admin-page h2,
-    .card,
-    table {
-        max-width: 100%;
+@media (max-width: 600px) {
+    .sidebar {
+        position: absolute;
+        transform: translateX(-100%);
     }
-
-    .dashboard-cards {
-        flex-direction: column;
-        align-items: center;
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .admin-page {
+        margin-left: 0;
     }
 }
