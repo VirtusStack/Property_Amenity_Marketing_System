@@ -6,6 +6,7 @@
 // Uses PDO and password hashing
 
 require_once __DIR__ . '/../../config/config.php'; // load DB connection and BASE_URL
+require_once __DIR__ . '/UserFunctions.php'; // include functions
 
 $message = ""; // feedback message
 
