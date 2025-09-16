@@ -2,7 +2,7 @@
 // /core/users/UserFunctions.php
 
 // Contains reusable functions for managing users
-// These match the functions from your sir's PDF
+
 
 //  CREATE: Register a new user
 function registerUser($pdo, $name, $email, $password, $roleId, $propertyId = null) {
