@@ -48,40 +48,38 @@ include_once __DIR__ . '/../../includes/header.php';
             <?= htmlspecialchars($message) ?>
         </div>
         <?php endif; ?>
-
         <!-- User Form -->
-        <div class="card">
-            <form method="POST">
-                <!-- Name input -->
-                <label>Name:</label>
-                <input type="text" name="name" required>
+<div class="card form-card">
+    <form method="POST">
+        <!-- Name input -->
+        <label>Name:</label>
+        <input type="text" name="name" required>
 
-                <!-- Email input -->
-                <label>Email:</label>
-                <input type="email" name="email" required>
+        <!-- Email input -->
+        <label>Email:</label>
+        <input type="email" name="email" required>
 
-                <!-- Password input -->
-                <label>Password:</label>
-                <input type="password" name="password" required>
+        <!-- Password input -->
+        <label>Password:</label>
+        <input type="password" name="password" required>
 
-                <!-- Role dropdown -->
-                <label>Role:</label>
-                <select name="role_id" required>
-                    <?php
-                    // Fetch roles dynamically from DB
-                    $roles = $pdo->query("SELECT * FROM roles")->fetchAll();
-                    foreach ($roles as $role) {
-                        echo "<option value='{$role['role_id']}'>{$role['role_name']}</option>";
-                    }
-                    ?>
-                </select>
+        <!-- Role dropdown -->
+        <label>Role:</label>
+        <select name="role_id" required>
+            <?php
+            // Fetch roles dynamically from DB
+            $roles = $pdo->query("SELECT * FROM roles")->fetchAll();
+            foreach ($roles as $role) {
+                echo "<option value='{$role['role_id']}'>{$role['role_name']}</option>";
+            }
+            ?>
+        </select>
 
-                <!-- Submit button -->
-                <button type="submit">Add User</button>
-            </form>
-        </div>
-
-    <!-- Sidebar -->
+        <!-- Submit button -->
+        <button type="submit">Add User</button>
+    </form>
+</div>
+           <!-- Sidebar -->
     <?php include_once __DIR__ . '/../../includes/sidebar.php'; ?>
 </main>
 
