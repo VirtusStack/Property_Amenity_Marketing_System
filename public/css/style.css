@@ -1,6 +1,6 @@
 /*
    Property Amenity Management System - Admin Layout
-   */
+*/
 
 /* -------------------- Reset -------------------- */
 * {
@@ -126,7 +126,6 @@ header {
     background: #f4f6f9;
 }
 
-
 /* Headings inside pages */
 .admin-page h2 {
     background: #2c3e50;
@@ -137,7 +136,7 @@ header {
     text-align: center;
 }
 
-/* -------------------- Cards -------------------- */
+/* -------------------- Cards (Dashboard only) -------------------- */
 .card {
     background: #fff;
     padding: 20px;
@@ -186,7 +185,7 @@ header {
     color: white;
 }
 
-/* -------------------- Forms -------------------- */
+/* -------------------- Generic Forms -------------------- */
 form {
     display: flex;
     flex-direction: column;
@@ -218,6 +217,93 @@ form button {
 
 form button:hover {
     background: #1a252f;
+}
+
+/* -------------------- Add Form (Only) -------------------- */
+.form-card {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: left;
+}
+
+.form-card h3 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+/* Two-column layout for desktop */
+.form-card form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 25px;
+}
+
+.form-card label {
+    grid-column: span 2; /* label on top by default */
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-card input,
+.form-card select {
+    grid-column: span 2; /* input full width under label */
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    background: #fafafa;
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+}
+
+.form-card input:focus,
+.form-card select:focus {
+    border-color: #1abc9c;
+    background: #fff;
+    box-shadow: 0 0 6px rgba(26,188,156,0.35);
+    outline: none;
+}
+
+/* Submit button full width */
+.form-card button {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    color: #fff;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s, transform 0.1s;
+}
+
+.form-card button:hover {
+    background: linear-gradient(135deg, #16a085, #149174);
+    transform: translateY(-2px);
+}
+
+.form-card button:active {
+    transform: translateY(0);
+}
+
+/* Responsive: single column for mobile */
+@media (max-width: 768px) {
+    .form-card form {
+        grid-template-columns: 1fr;
+    }
+    .form-card label,
+    .form-card input,
+    .form-card select,
+    .form-card button {
+        grid-column: span 1;
+    }
 }
 
 /* -------------------- Footer -------------------- */
