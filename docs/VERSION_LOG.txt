@@ -14,4 +14,11 @@ Version Log – Property Amenity & Marketing System
    0.2.2 – Pages
         0.2.2.1 – add.php (Add User) 
         0.2.2.2 – manage.php (List + Delete + Edit links) 
-        0.2.2.3 – edit.php (Update User) 
+        0.2.2.3 – edit.php (Update User)
+
+0.3 – Role Module
+    0.2.1 – RoleFunctions.php
+        0.2.1.1 – addRole() 
+        0.2.1.2 – getRoles() 
+        0.2.1.3 – deleteRole() 
+   
