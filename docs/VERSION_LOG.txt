@@ -27,7 +27,7 @@ v0.2 – Refactored Version
 
 0.2.1 – Core Setup
     - config/config.php → Database connection + constants
-    - assets/ → SB Admin 2 assets (CSS, JS, vendor, fonts, images)
+    - assets/ SB Admin 2 assets (CSS, JS, vendor, fonts, images)
 
 0.2.2 – Templates (UI Components)
     - templates/include/header.php
@@ -36,8 +36,7 @@ v0.2 – Refactored Version
     - templates/include/footer.php
 
 0.2.3 – Admin Dashboard
-    - templates/admin/index.php → Dashboard with SB Admin 2
-
+    - templates/admin/index.php → Dashboard
 0.2.4 – User Module (Refactored with OOP)
     - classes/User.php → User class (CRUD methods)
     - core/users/add_user.php → Add User Page
