@@ -1,6 +1,6 @@
 <?php
 // admin.php
-// -------------------------
+
 // Central admin controller  
 // Handles Add, Manage, and Edit User actions
 require("config/config.php");
@@ -11,9 +11,8 @@ session_start();
 $action   = isset($_GET['action']) ? $_GET['action'] : "";
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
 
-// -------------------------
 // Action routing
-// -------------------------
+
 switch ($action) {
     case 'newUser':
         newUser();
@@ -28,9 +27,9 @@ switch ($action) {
         dashboard();
 }
 
-// -------------------------
+
 // Function: Add new user
-// -------------------------
+
 function newUser() {
     global $pdo;
 
@@ -52,9 +51,9 @@ function newUser() {
     require(TEMPLATE_PATH . "/users/add_user.php");
 }
 
-// -------------------------
+
 // Function: Manage users
-// -------------------------
+
 function manageUsers() {
     global $pdo;
 
@@ -81,9 +80,9 @@ function manageUsers() {
     require(TEMPLATE_PATH . "/users/manage_user.php");
 }
 
-// -------------------------
+
 // Function: Edit user
-// -------------------------
+
 function editUser() {
     global $pdo;
     $results = ['pageTitle' => "Edit User", 'message' => ""];
@@ -120,9 +119,9 @@ function editUser() {
     require(TEMPLATE_PATH . "/users/edit_user.php");
 }
 
-// -------------------------
+
 // Function: Dashboard placeholder
-// -------------------------
+
 function dashboard() {
     // Prepare any data needed
     $currentUserName = isset($_SESSION['username']) ? $_SESSION['username'] : "Super Admin";
