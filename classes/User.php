@@ -1,19 +1,16 @@
 <?php
 // /classes/User.php
 // ---------------------------
-// User class for handling CRUD operations
-// Works with PDO and uses static methods for simplicity
+// User class for CRUD
 // ---------------------------
 
 class User {
 
-    // CREATE: Register a new user
+    // CREATE: Add a new user
     public static function register($pdo, $name, $email, $password, $roleId, $propertyId = null) {
         try {
-            // Hash password before saving
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            // Insert into database
             $stmt = $pdo->prepare("
                 INSERT INTO users (name, email, password, role_id, property_id) 
                 VALUES (?, ?, ?, ?, ?)
@@ -25,56 +22,46 @@ class User {
         }
     }
 
-    // READ: Get all users with their role name
+    // READ: Get all users with role name
     public static function getAll($pdo) {
-        $stmt = $pdo->query("
-            SELECT u.user_id, u.name, u.email, r.role_name, u.created_at
-            FROM users u
-            JOIN roles r ON u.role_id = r.role_id
-            ORDER BY u.created_at DESC
-        ");
-        return $stmt->fetchAll();
+        try {
+            $stmt = $pdo->query("
+                SELECT u.user_id, u.name, u.email, r.role_name, u.created_at
+                FROM users u
+                LEFT JOIN roles r ON u.role_id = r.role_id
+                ORDER BY u.created_at DESC
+            ");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Fetching all users failed: " . $e->getMessage());
+            return [];
+        }
     }
 
-    // READ: Get a single user by ID
+    // READ: Single user
     public static function getById($pdo, $userId) {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        return $stmt->fetch();
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Get user by ID failed: " . $e->getMessage());
+            return false;
+        }
     }
 
-    // UPDATE: Update user details
-    // Supports optional password update
+    // UPDATE: User details
     public static function update($pdo, $userId, $data) {
         try {
             if (!empty($data['password'])) {
-                // If password provided → hash it
                 $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-                $sql = "UPDATE users 
-                        SET name=?, email=?, password=?, role_id=?, property_id=? 
-                        WHERE user_id=?";
+                $sql = "UPDATE users SET name=?, email=?, password=?, role_id=?, property_id=? WHERE user_id=?";
                 $stmt = $pdo->prepare($sql);
-                return $stmt->execute([
-                    $data['name'],
-                    $data['email'],
-                    $hashedPassword,
-                    $data['role_id'],
-                    $data['property_id'],
-                    $userId
-                ]);
+                return $stmt->execute([$data['name'], $data['email'], $hashedPassword, $data['role_id'], $data['property_id'], $userId]);
             } else {
-                // No new password → keep old one
-                $sql = "UPDATE users 
-                        SET name=?, email=?, role_id=?, property_id=? 
-                        WHERE user_id=?";
+                $sql = "UPDATE users SET name=?, email=?, role_id=?, property_id=? WHERE user_id=?";
                 $stmt = $pdo->prepare($sql);
-                return $stmt->execute([
-                    $data['name'],
-                    $data['email'],
-                    $data['role_id'],
-                    $data['property_id'],
-                    $userId
-                ]);
+                return $stmt->execute([$data['name'], $data['email'], $data['role_id'], $data['property_id'], $userId]);
             }
         } catch (PDOException $e) {
             error_log("Update user failed: " . $e->getMessage());
@@ -82,9 +69,14 @@ class User {
         }
     }
 
-    // DELETE: Remove a user by ID
+    // DELETE: Remove user
     public static function delete($pdo, $userId) {
-        $stmt = $pdo->prepare("DELETE FROM users WHERE user_id = ?");
-        return $stmt->execute([$userId]);
+        try {
+            $stmt = $pdo->prepare("DELETE FROM users WHERE user_id = ?");
+            return $stmt->execute([$userId]);
+        } catch (PDOException $e) {
+            error_log("Delete user failed: " . $e->getMessage());
+            return false;
+        }
     }
 }
