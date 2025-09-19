@@ -2,9 +2,7 @@
 // /templates/admin/index.php
 
 // ADMIN DASHBOARD MAIN PAGE
-// Shows header, sidebar, topbar, dashboard cards, and footer
-// For now simulating logged-in admin
-require_once __DIR__ . '/../../config/config.php'; // load config + BASE_URL
+require_once __DIR__ . '/../../config/config.php';
 
 // Simulated logged-in admin
 $currentUserName = "Super Admin";
@@ -12,13 +10,13 @@ $currentUserRole = "Admin";
 ?>
 
 <!-- Load Header -->
- <?php include_once __DIR__ . '/../../templates/include/header.php'; ?>
+<?php include_once __DIR__ . '/../../templates/include/header.php'; ?>
 
 <!-- Page Wrapper -->
 <div id="wrapper">
 
     <!-- Sidebar -->
-   <?php include_once __DIR__ . '/../../templates/include/sidebar.php'; ?>
+    <?php include_once __DIR__ . '/../../templates/include/sidebar.php'; ?>
     <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
@@ -49,8 +47,9 @@ $currentUserRole = "Admin";
                             <div class="card-body">
                                 <div class="card-title"><i class="fas fa-users"></i> Users</div>
                                 <div class="card-text">
-                                    <p><a href="<?= BASE_URL ?>/core/users/manage_user.php">Manage Users</a></p>
-                                    <p><a href="<?= BASE_URL ?>/core/users/add_user.php">Add User</a></p>
+                                    <!-- ✅ Controller-based links -->
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageUsers">Manage Users</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newUser">Add User</a></p>
                                 </div>
                             </div>
                         </div>
@@ -62,8 +61,8 @@ $currentUserRole = "Admin";
                             <div class="card-body">
                                 <div class="card-title"><i class="fas fa-key"></i> Roles</div>
                                 <div class="card-text">
-                                    <p><a href="<?= BASE_URL ?>/core/roles/manage_roles.php">Manage Roles</a></p>
-                                    <p><a href="<?= BASE_URL ?>/core/roles/add_role.php">Add Role</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageRoles">Manage Roles</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newRole">Add Role</a></p>
                                 </div>
                             </div>
                         </div>
@@ -75,8 +74,8 @@ $currentUserRole = "Admin";
                             <div class="card-body">
                                 <div class="card-title"><i class="fas fa-building"></i> Properties</div>
                                 <div class="card-text">
-                                    <p><a href="<?= BASE_URL ?>/core/properties/manage_properties.php">Manage Properties</a></p>
-                                    <p><a href="<?= BASE_URL ?>/core/properties/add_property.php">Add Property</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageProperties">Manage Properties</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newProperty">Add Property</a></p>
                                 </div>
                             </div>
                         </div>
@@ -85,7 +84,6 @@ $currentUserRole = "Admin";
                 </div>
                 <!-- End Dashboard Cards -->
 
-               
             </div>
             <!-- /.container-fluid -->
 
