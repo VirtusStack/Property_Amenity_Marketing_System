@@ -26,6 +26,8 @@ try {
 // Project paths
 define("BASE_URL", "http://localhost/Property_Amenity_Marketing_System");
 define("UPLOAD_PATH", dirname(__DIR__) . "/public/uploads/media");
+// Templates folder path (absolute)
+define("TEMPLATE_PATH", __DIR__ . "/../templates");
 
 // Admin default credentials
 define("ADMIN_USERNAME", "admin");
