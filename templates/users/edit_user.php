@@ -1,0 +1,106 @@
+<?php
+// /templates/users/edit_user.php
+// -------------------------
+// View file: Edit User form
+?>
+<?php include __DIR__ . "/../include/header.php"; ?>
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <?php include __DIR__ . "/../include/sidebar.php"; ?>
+    <!-- End of Sidebar -->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <?php include __DIR__ . "/../include/topbar.php"; ?>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <h1 class="h3 mb-4 text-gray-800"><?= $results['pageTitle'] ?></h1>
+
+                <!-- Feedback message -->
+                <?php if (!empty($results['message'])): ?>
+                    <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
+                        <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
+                        <?= htmlspecialchars($results['message']) ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <!-- User Edit Form Card -->
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <form method="POST">
+
+                            <!-- Name input -->
+                            <div class="mb-3">
+                                <label class="form-label">Name:</label>
+                                <input type="text" name="name" class="form-control"
+                                    value="<?= htmlspecialchars($results['user']['name']) ?>" required>
+                            </div>
+
+                            <!-- Email input -->
+                            <div class="mb-3">
+                                <label class="form-label">Email:</label>
+                                <input type="email" name="email" class="form-control"
+                                    value="<?= htmlspecialchars($results['user']['email']) ?>" required>
+                            </div>
+
+                            <!-- Password input -->
+                            <div class="mb-3">
+                                <label class="form-label">New Password (leave blank to keep old):</label>
+                                <input type="password" name="password" class="form-control">
+                            </div>
+
+                            <!-- Role dropdown -->
+                            <div class="mb-3">
+                                <label class="form-label">Role:</label>
+                                <select name="role_id" class="form-select" required>
+                                    <?php
+                                    $roles = $pdo->query("SELECT * FROM roles")->fetchAll();
+                                    foreach ($roles as $role) {
+                                        $selected = ($role['role_id'] == $results['user']['role_id']) ? "selected" : "";
+                                        echo "<option value='{$role['role_id']}' $selected>{$role['role_name']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <!-- Property (optional) -->
+                            <div class="mb-3">
+                                <label class="form-label">Property ID (optional):</label>
+                                <input type="number" name="property_id" class="form-control"
+                                    value="<?= htmlspecialchars($results['user']['property_id']) ?>">
+                            </div>
+
+                            <!-- Submit button -->
+                            <button type="submit" class="btn btn-primary">Update User</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <?php include __DIR__ . "/../include/footer.php"; ?>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
