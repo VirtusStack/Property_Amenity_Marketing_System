@@ -2,7 +2,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
   <!-- Sidebar - Brand -->
-  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= BASE_URL ?>/templates/admin/index.php">
+  <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= BASE_URL ?>/admin.php">
     <div class="sidebar-brand-icon rotate-n-15">
       <i class="fas fa-building"></i>
     </div>
@@ -14,7 +14,8 @@
 
   <!-- Nav Item - Dashboard -->
   <li class="nav-item active">
-    <a class="nav-link" href="<?= BASE_URL ?>/templates/admin/index.php">
+    <!-- Dashboard link points to controller (admin.php) -->
+    <a class="nav-link" href="<?= BASE_URL ?>/admin.php">
       <i class="fas fa-fw fa-tachometer-alt"></i>
       <span>Dashboard</span>
     </a>
@@ -36,8 +37,9 @@
     </a>
     <div id="collapseUsers" class="collapse" aria-labelledby="headingUsers" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
-        <a class="collapse-item" href="<?= BASE_URL ?>/core/users/manage_user.php">Manage Users</a>
-        <a class="collapse-item" href="<?= BASE_URL ?>/core/users/add_user.php">Add User</a>
+        <!-- ✅ Updated links to go through admin.php controller -->
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageUsers">Manage Users</a>
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newUser">Add User</a>
       </div>
     </div>
   </li>
@@ -50,13 +52,14 @@
     </a>
     <div id="collapseProperties" class="collapse" aria-labelledby="headingProperties" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
-        <a class="collapse-item" href="<?= BASE_URL ?>/templates/admin/manage_property.php">Manage Properties</a>
-        <a class="collapse-item" href="<?= BASE_URL ?>/templates/admin/add_property.php">Add Property</a>
+        <!-- ✅ Updated links to go through admin.php controller -->
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageProperties">Manage Properties</a>
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newProperty">Add Property</a>
       </div>
     </div>
   </li>
 
-   <!-- Divider -->
+  <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">
 
 </ul>
