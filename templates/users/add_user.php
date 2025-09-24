@@ -2,7 +2,7 @@
 // /templates/users/add_user.php
 // -------------------------
 // View file: Displays Add User form
-require_once __DIR__ . '/../../config/config.php';   // load config + BASE_URL + DB
+require_once __DIR__ . '/../../config/config.php';   // Load config + BASE_URL + DB
 ?>
 <?php include __DIR__ . "/../include/header.php"; ?>
 
@@ -33,8 +33,8 @@ require_once __DIR__ . '/../../config/config.php';   // load config + BASE_URL +
 
                 <!-- Feedback message -->
                 <?php if (!empty($results['message'])): ?>
-                    <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
-                        <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
+     <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
+                    <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
                         <?= htmlspecialchars($results['message']) ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -45,21 +45,26 @@ require_once __DIR__ . '/../../config/config.php';   // load config + BASE_URL +
                     <div class="card-body">
                         <!-- ✅ Make sure form submits to admin.php -->
                         <form method="POST" action="<?= BASE_URL ?>/admin.php?action=newUser">
+
+                            <!-- Name input -->
                             <div class="form-group mb-3">
                                 <label>Name:</label>
                                 <input type="text" name="name" class="form-control" required>
                             </div>
 
+                            <!-- Email input -->
                             <div class="form-group mb-3">
                                 <label>Email:</label>
                                 <input type="email" name="email" class="form-control" required>
                             </div>
 
+                            <!-- Password input -->
                             <div class="form-group mb-3">
                                 <label>Password:</label>
                                 <input type="password" name="password" class="form-control" required>
                             </div>
 
+                            <!-- Role dropdown -->
                             <div class="form-group mb-3">
                                 <label>Role:</label>
                                 <select name="role_id" class="form-control" required>
@@ -72,6 +77,34 @@ require_once __DIR__ . '/../../config/config.php';   // load config + BASE_URL +
                                 </select>
                             </div>
 
+                            <!-- Company dropdown -->
+                            <div class="form-group mb-3">
+                                <label>Company:</label>
+                                <select name="company_id" class="form-control" required>
+                                    <?php
+                                    $companies = $pdo->query("SELECT * FROM companies")->fetchAll();
+                                    foreach ($companies as $company) {
+                                        echo "<option value='{$company['company_id']}'>{$company['company_name']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <!-- Location dropdown -->
+                            <div class="form-group mb-3">
+                                <label>Location :</label>
+                                <select name="location_id" class="form-control">
+                                    <option value="">-- Select Location --</option>
+                                    <?php
+                                    $locations = $pdo->query("SELECT * FROM locations")->fetchAll();
+                                    foreach ($locations as $location) {
+                                        echo "<option value='{$location['location_id']}'>{$location['location_name']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <!-- Submit button -->
                             <button type="submit" class="btn btn-primary">Add User</button>
                         </form>
                     </div>
