@@ -10,7 +10,7 @@ date_default_timezone_set('Asia/Kolkata');
 define("DB_HOST", "localhost");
 define("DB_NAME", "property_system");
 define("DB_USER", "root");
-define("DB_PASS", "admin123");
+define("DB_PASS", "");
 
 // DSN for PDO
 define("DB_DSN", "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME);
