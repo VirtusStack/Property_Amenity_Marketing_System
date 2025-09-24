@@ -1,132 +1,192 @@
 <?php
-// admin.php
+// admin.php → Central Admin Controller
+// ---------------------------
+// Handles Dashboard, Users, Login/Logout
+// ---------------------------
 
-// Central admin controller  
-// Handles Add, Manage, and Edit User actions
+// 1. Load config and required classes
 require("config/config.php");
 require_once __DIR__ . "/classes/User.php";
-session_start();
+require_once __DIR__ . "/classes/Company.php";
+require_once __DIR__ . "/classes/Location.php";
 
-// Get action from URL, default is dashboard
-$action   = isset($_GET['action']) ? $_GET['action'] : "";
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : "";
+session_start(); // Start PHP session
 
-// Action routing
+// 2. Get action from URL
+$action = $_GET['action'] ?? "";
 
+// 3. Force login if not logged in
+if (!isset($_SESSION['user_id']) && $action !== "login") {
+    $action = "login";
+}
+
+// 4. Routing
 switch ($action) {
+
+    case 'login':
+        login();
+        break;
+
+    case 'logout':
+        logout();
+        break;
+
+    case 'dashboard':
+    default:
+        dashboard();
+        break;
+
     case 'newUser':
         newUser();
         break;
+
     case 'manageUsers':
         manageUsers();
         break;
+
     case 'editUser':
         editUser();
         break;
-    default:
-        dashboard();
 }
 
+// -------------------------
+// FUNCTIONS
+// -------------------------
 
-// Function: Add new user
+function login() {
+    global $pdo;
+    $results = [
+        'errorMessage' => '',
+        'pageTitle' => 'Login'
+    ];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email    = trim($_POST['email']);
+        $password = $_POST['password'];
+
+        $user = User::authenticate($pdo, $email, $password);
+
+        if ($user) {
+            $_SESSION['user_id']     = $user['user_id'];
+            $_SESSION['company_id']  = $user['company_id'];
+            $_SESSION['role_id']     = $user['role_id'];
+            $_SESSION['location_id'] = $user['location_id'] ?? null;
+            $_SESSION['user_name']   = $user['name'];
+            $_SESSION['login_time']  = time();
+
+            ini_set('session.cookie_lifetime', 86400);
+            ini_set('session.gc_maxlifetime', 86400);
+
+            header("Location: admin.php?action=dashboard");
+            exit;
+        } else {
+            $results['errorMessage'] = "❌ Invalid email or password!";
+        }
+    }
+
+    require(TEMPLATE_PATH . "/common/login_form.php");
+}
+
+function logout() {
+    session_destroy();
+    header("Location: admin.php?action=login");
+    exit;
+}
+
+function dashboard() {
+    $results = [
+        'pageTitle' => 'Dashboard',
+        'userName' => $_SESSION['user_name'] ?? 'Unknown'
+    ];
+    require(TEMPLATE_PATH . "/common/index.php");
+}
 
 function newUser() {
     global $pdo;
-
-    $results = ['pageTitle' => "Add User", 'message' => ""];
+    $results = [
+        'message' => '',
+        'pageTitle' => 'Add New User'
+    ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $name     = trim($_POST['name']);
-        $email    = trim($_POST['email']);
-        $password = $_POST['password'];
-        $role_id  = $_POST['role_id'];
+        $name        = trim($_POST['name']);
+        $email       = trim($_POST['email']);
+        $password    = $_POST['password'];
+        $role_id     = $_POST['role_id'];
+        $company_id  = $_POST['company_id'];
+        $location_id = $_POST['location_id'] ?? null;
 
-        if (User::register($pdo, $name, $email, $password, $role_id)) {
+        if (User::register($pdo, $name, $email, $password, $role_id, $company_id, $location_id)) {
             $results['message'] = "✅ User added successfully!";
         } else {
             $results['message'] = "❌ Error adding user!";
         }
     }
 
+    $companies = Company::getAll($pdo);
+    $roles     = []; // TODO: add Role::getAll($pdo)
+    $locations = Location::getAll($pdo);
+
     require(TEMPLATE_PATH . "/users/add_user.php");
 }
 
-
-// Function: Manage users
-
 function manageUsers() {
     global $pdo;
+    $results = [
+        'message' => '',
+        'pageTitle' => 'Manage Users'
+    ];
 
-    $results = ['pageTitle' => "Manage Users", 'message' => ""];
-
-    // Delete user if requested
     if (isset($_GET['delete'])) {
-        if (User::delete($pdo, (int) $_GET['delete'])) {
-            $results['message'] = "✅ User deleted successfully!";
+        $userId = (int)$_GET['delete'];
+        if (User::delete($pdo, $userId)) {
+            $results['message'] = "✅ User deleted!";
         } else {
             $results['message'] = "❌ Error deleting user!";
         }
     }
 
-    // Fetch all users from database
     $results['users'] = User::getAll($pdo);
-
-    // Ensure $results['users'] is always an array
-    if (!is_array($results['users'])) {
-        $results['users'] = [];
-        $results['message'] .= " ❌ Failed to fetch users from database.";
-    }
 
     require(TEMPLATE_PATH . "/users/manage_user.php");
 }
 
-
-// Function: Edit user
-
 function editUser() {
     global $pdo;
-    $results = ['pageTitle' => "Edit User", 'message' => ""];
+    $results = [
+        'message' => '',
+        'pageTitle' => 'Edit User'
+    ];
 
-    if (!isset($_GET['id'])) {
-        die("❌ No user ID provided.");
-    }
-    $userId = (int) $_GET['id'];
+    if (!isset($_GET['id'])) die("❌ No user ID given.");
 
-    $user = User::getById($pdo, $userId);
-    if (!$user) {
-        die("❌ User not found!");
-    }
+    $userId = (int)$_GET['id'];
+    $user   = User::getById($pdo, $userId);
 
-    // Handle form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = [
-            'name'        => trim($_POST['name']),
-            'email'       => trim($_POST['email']),
-            'password'    => $_POST['password'], // optional
-            'role_id'     => $_POST['role_id'],
-            'property_id' => !empty($_POST['property_id']) ? $_POST['property_id'] : null
+            'name'       => trim($_POST['name']),
+            'email'      => trim($_POST['email']),
+            'password'   => !empty($_POST['password']) ? $_POST['password'] : $user['password'],
+            'role_id'    => $_POST['role_id'],
+            'company_id' => $_POST['company_id'],
+            'location_id'=> $_POST['location_id'] ?? null
         ];
 
         if (User::update($pdo, $userId, $data)) {
-            $results['message'] = "✅ User updated successfully!";
-            $user = User::getById($pdo, $userId); // refresh user info
+            $results['message'] = "✅ User updated!";
+            $user = User::getById($pdo, $userId);
         } else {
             $results['message'] = "❌ Error updating user!";
         }
     }
 
+    $companies = Company::getAll($pdo);
+    $roles     = []; // TODO: add Role::getAll($pdo)
+    $locations = Location::getAll($pdo);
+
+    // pass $user so edit_user.php won't throw undefined error
     $results['user'] = $user;
+
     require(TEMPLATE_PATH . "/users/edit_user.php");
-}
-
-
-// Function: Dashboard placeholder
-
-function dashboard() {
-    // Prepare any data needed
-    $currentUserName = isset($_SESSION['username']) ? $_SESSION['username'] : "Super Admin";
-    $currentUserRole = "Admin"; // or fetch from DB/session
-
-    // Include full dashboard template
-    require(TEMPLATE_PATH . "/admin/index.php");
 }
