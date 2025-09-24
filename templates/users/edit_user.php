@@ -1,7 +1,8 @@
 <?php
 // /templates/users/edit_user.php
-// -------------------------
+
 // View file: Edit User form
+
 ?>
 <?php include __DIR__ . "/../include/header.php"; ?>
 
@@ -76,11 +77,33 @@
                                 </select>
                             </div>
 
-                            <!-- Property (optional) -->
+                            <!-- Company dropdown -->
                             <div class="mb-3">
-                                <label class="form-label">Property ID (optional):</label>
-                                <input type="number" name="property_id" class="form-control"
-                                    value="<?= htmlspecialchars($results['user']['property_id']) ?>">
+                                <label class="form-label">Company:</label>
+                                <select name="company_id" class="form-select" required>
+                                    <?php
+                                    $companies = $pdo->query("SELECT * FROM companies")->fetchAll();
+                                    foreach ($companies as $company) {
+                                        $selected = ($company['company_id'] == $results['user']['company_id']) ? "selected" : "";
+                                        echo "<option value='{$company['company_id']}' $selected>{$company['company_name']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <!-- Location dropdown -->
+                            <div class="mb-3">
+                                <label class="form-label">Location (optional):</label>
+                                <select name="location_id" class="form-select">
+                                    <option value="">-- Select Location --</option>
+                                    <?php
+                                    $locations = $pdo->query("SELECT * FROM locations")->fetchAll();
+                                    foreach ($locations as $location) {
+                                        $selected = ($location['location_id'] == $results['user']['location_id']) ? "selected" : "";
+                                        echo "<option value='{$location['location_id']}' $selected>{$location['location_name']}</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
 
                             <!-- Submit button -->
