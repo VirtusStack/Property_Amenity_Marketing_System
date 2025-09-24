@@ -10,7 +10,6 @@ $results['message']   = $results['message'] ?? '';
 $results['users']     = $results['users'] ?? [];
 ?>
 
-?>
 
 <?php include __DIR__ . "/../include/header.php"; ?>
 
