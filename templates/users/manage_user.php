@@ -1,15 +1,15 @@
 <?php
 // /templates/users/manage_user.php
-// -------------------------
 // View file: Displays all users in the admin panel
-// -------------------------
+// Includes Company & Location info
 
-// Ensure $results array exists to avoid undefined variable errors
-$results = $results ?? [
-    'pageTitle' => 'Manage Users',
-    'message'   => '',
-    'users'     => []
-];
+// Ensure $results array exists and has required keys
+$results = $results ?? [];
+$results['pageTitle'] = $results['pageTitle'] ?? 'Manage Users';
+$results['message']   = $results['message'] ?? '';
+$results['users']     = $results['users'] ?? [];
+?>
+
 ?>
 
 <?php include __DIR__ . "/../include/header.php"; ?>
@@ -37,10 +37,10 @@ $results = $results ?? [
                 <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800"><?= htmlspecialchars($results['pageTitle']) ?></h1>
 
-                <!-- Feedback message (success or error) -->
-                <?php if (!empty($results['message'])): ?>
-                    <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
-                        <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
+           <!-- Feedback message (success or error) -->
+          <?php if (!empty($results['message'])): ?>
+       <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
+                     <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
                         <?= htmlspecialchars($results['message']) ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -57,6 +57,8 @@ $results = $results ?? [
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Role</th>
+                                        <th>Company</th>
+                                        <th>Location</th>
                                         <th>Created At</th>
                                         <th>Actions</th>
                                     </tr>
@@ -71,19 +73,37 @@ $results = $results ?? [
                                                 <td><?= htmlspecialchars($user['name']) ?></td>
                                                 <td><?= htmlspecialchars($user['email']) ?></td>
                                                 <td><?= htmlspecialchars($user['role_name'] ?? 'No role assigned') ?></td>
+                                                <td>
+                                                    <?php
+                                                    $companyName = $pdo->prepare("SELECT company_name FROM companies WHERE company_id=?");
+                                                    $companyName->execute([$user['company_id']]);
+                                                    echo htmlspecialchars($companyName->fetchColumn() ?? 'N/A');
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    if (!empty($user['location_id'])) {
+                                                        $locationName = $pdo->prepare("SELECT location_name FROM locations WHERE location_id=?");
+                                                        $locationName->execute([$user['location_id']]);
+                                                        echo htmlspecialchars($locationName->fetchColumn() ?? 'N/A');
+                                                    } else {
+                                                        echo 'N/A';
+                                                    }
+                                                    ?>
+                                                </td>
                                                 <td><?= $user['created_at'] ?></td>
                                                 <td>
-                                                <!-- Edit button -->
-                                                <a class="btn btn-sm btn-primary" href="<?= BASE_URL ?>/admin.php?action=editUser&id=<?= $user['user_id'] ?>">Edit</a>
-                                                    <!-- Delete button with confirmation -->
-                                                    <a class="btn btn-sm btn-danger" href="<?= BASE_URL ?>/admin.php?action=manageUsers&delete=<?= $user['user_id'] ?>"
+                             <!-- Edit button -->
+                             <a class="btn btn-sm btn-primary" href="<?= BASE_URL ?>/admin.php?action=editUser&id=<?= $user['user_id'] ?>">Edit</a>
+                             <!-- Delete button with confirmation -->
+                             <a class="btn btn-sm btn-danger" href="<?= BASE_URL ?>/admin.php?action=manageUsers&delete=<?= $user['user_id'] ?>"
                                                        onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <!-- No users found -->
-                                        <tr><td colspan="6">No users found.</td></tr>
+                                        <tr><td colspan="8">No users found.</td></tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
