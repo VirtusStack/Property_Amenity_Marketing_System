@@ -1,7 +1,7 @@
 <?php
 // /templates/companies/add_company.php
 // -------------------------
-// View file: Displays Add Company + Location form
+// View file: Displays Add Company form
 require_once __DIR__ . '/../../config/config.php';
 ?>
 <?php include __DIR__ . "/../include/header.php"; ?>
@@ -78,21 +78,6 @@ require_once __DIR__ . '/../../config/config.php';
                                 <label>Website:</label>
                                 <input type="url" name="website" class="form-control"
                                     value="<?= htmlspecialchars($results['website'] ?? '') ?>">
-                            </div>
-
-                            <hr>
-                            <h5>📍 Location Information</h5>
-
-                            <!-- Location Name -->
-                            <div class="form-group mb-3">
-                                <label>Location Name:</label>
-                                <input type="text" name="location_name" class="form-control" required>
-                            </div>
-
-                            <!-- Address -->
-                            <div class="form-group mb-3">
-                                <label>Address:</label>
-                                <textarea name="address" class="form-control" rows="2"></textarea>
                             </div>
 
                             <!-- Submit Button -->
