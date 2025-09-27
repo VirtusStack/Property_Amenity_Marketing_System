@@ -49,6 +49,14 @@ require_once __DIR__ . '/../include/header.php';
                                    placeholder="Enter your password" required maxlength="50" />
                         </div>
 
+			<!-- Remember Me checkbox -->
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me" value="1">
+                            <label class="form-check-label" for="remember_me">
+                                Remember Me
+                            </label>
+                        </div>
+
                         <!-- Submit button -->
                         <div class="d-grid">
                            <button type="submit" class="btn btn-primary w-100">Login</button> 
