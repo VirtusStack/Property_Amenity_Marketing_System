@@ -1,46 +1,68 @@
 <?php
-// classes/Company.php
-// Handles company CRUD
+// /classes/Company.php
+// ---------------------------
+// Company class for CRUD
+// ---------------------------
 
 class Company {
 
-    // Get all companies
+    // CREATE company
+    public static function register($pdo, $company_name, $description = '', $email = '', $phone = '', $website = '') {
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO companies (company_name, description, email, phone, website) 
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([$company_name, $description, $email, $phone, $website]);
+            return $pdo->lastInsertId(); // return new company ID
+        } catch (PDOException $e) {
+            error_log("Register company failed: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // READ ALL
     public static function getAll($pdo) {
-        $stmt = $pdo->query("SELECT * FROM companies ORDER BY company_name ASC");
+        $stmt = $pdo->query("SELECT * FROM companies WHERE is_deleted = 0 ORDER BY company_id DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Get company by ID
+    // READ BY ID
     public static function getById($pdo, $id) {
-        $stmt = $pdo->prepare("SELECT * FROM companies WHERE company_id = :id");
-        $stmt->execute([':id' => $id]);
+        $stmt = $pdo->prepare("SELECT * FROM companies WHERE company_id = ? AND is_deleted = 0");
+        $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Add new company
-    public static function add($pdo, $company_name, $address = null, $phone = null, $email = null) {
-        $stmt = $pdo->prepare("INSERT INTO companies (company_name, address, phone, email, created_at)
-                               VALUES (:company_name, :address, :phone, :email, NOW())");
-        return $stmt->execute([
-            ':company_name' => $company_name,
-            ':address'      => $address,
-            ':phone'        => $phone,
-            ':email'        => $email
-        ]);
-    }
-
-    // Update company
+    // UPDATE company safely with defaults
     public static function update($pdo, $id, $data) {
-        $stmt = $pdo->prepare("UPDATE companies 
-                               SET company_name = :company_name, address = :address, phone = :phone, email = :email
-                               WHERE company_id = :id");
-        $data['id'] = $id;
-        return $stmt->execute($data);
+        try {
+            // Use null coalescing to provide default values if keys are missing
+            $company_name = $data['company_name'] ?? '';
+            $description  = $data['description']  ?? '';
+            $email        = $data['email']        ?? '';
+            $phone        = $data['phone']        ?? '';
+            $website      = $data['website']      ?? '';
+
+            $stmt = $pdo->prepare("
+                UPDATE companies SET company_name=?, description=?, email=?, phone=?, website=? 
+                WHERE company_id=?
+            ");
+            return $stmt->execute([$company_name, $description, $email, $phone, $website, $id]);
+        } catch (PDOException $e) {
+            error_log("Update company failed: " . $e->getMessage());
+            return false;
+        }
     }
 
-    // Delete company
+    // DELETE (soft delete)
     public static function delete($pdo, $id) {
-        $stmt = $pdo->prepare("DELETE FROM companies WHERE company_id = :id");
-        return $stmt->execute([':id' => $id]);
+        try {
+            $stmt = $pdo->prepare("UPDATE companies SET is_deleted=1 WHERE company_id=?");
+            return $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            error_log("Delete company failed: " . $e->getMessage());
+            return false;
+        }
     }
 }
