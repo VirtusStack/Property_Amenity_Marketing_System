@@ -1,7 +1,8 @@
 <?php
 // /templates/companies/edit_company.php
 // -------------------------
-// View file: Displays Edit Company + Location form
+// View file: Displays Edit Company
+
 require_once __DIR__ . '/../../config/config.php';
 ?>
 <?php include __DIR__ . "/../include/header.php"; ?>
@@ -80,28 +81,9 @@ require_once __DIR__ . '/../../config/config.php';
                                     value="<?= htmlspecialchars($results['company']['website'] ?? '') ?>">
                             </div>
 
-                            <hr>
-                            <h5>📍 Location Information</h5>
-
-                            <!-- Location Name -->
-                            <div class="form-group mb-3">
-                                <label>Location Name:</label>
-                                <input type="text" name="location_name" class="form-control"
-                                    value="<?= htmlspecialchars($results['location']['location_name'] ?? '') ?>">
-                            </div>
-
-                            <!-- Address -->
-                            <div class="form-group mb-3">
-                                <label>Address:</label>
-                                <textarea name="address" class="form-control" rows="2"><?= htmlspecialchars($results['location']['address'] ?? '') ?></textarea>
-                            </div>
-
-                            <!-- ✅ Hidden field for location_id (needed for update) -->
-                            <input type="hidden" name="location_id" value="<?= htmlspecialchars($results['location']['location_id'] ?? '') ?>">
-
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary">Update Company</button>
-                        </form>
+                         </form>
                     </div>
                 </div>
 
@@ -120,4 +102,3 @@ require_once __DIR__ . '/../../config/config.php';
 
 </div>
 <!-- End of Page Wrapper -->
-
