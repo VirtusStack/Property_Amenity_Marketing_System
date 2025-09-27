@@ -36,9 +36,83 @@ v0.2 – Refactored Version
     - templates/include/footer.php
 
 0.2.3 – Admin Dashboard
-    - templates/admin/index.php → Dashboard
+    - templates/common/index.php → Dashboard
+
 0.2.4 – User Module (Refactored with OOP)
     - classes/User.php → User class (CRUD methods)
-    - core/users/add_user.php → Add User Page
-    - core/users/manage_user.php → Manage Users (List + Delete + Edit)
-    - core/users/edit_user.php → Edit User Page
+    - templates/users/add_user.php → Add User Page
+    - templates/users/manage_user.php → Manage Users (List + Delete + Edit)
+    - templates/users/edit_user.php → Edit User Page
+
+v0.3 – Central Controller Version
+
+0.3.1 – Admin Controller (Unified)
+     - admin.php 
+     - Functions included:
+        - dashboard()
+        - newUser()
+        - manageUsers()
+        - editUser()
+
+0.3.2 – User Module (Controller-based)
+      - Add User → handled inside admin.php?action=newUser
+      - Manage Users → handled inside admin.php?action=manageUsers
+      - Edit User → handled inside admin.php?action=editUser
+
+0.4.1.1 – Classes
+  0.4.1.1 – Role.php
+        - register() 
+        - getAll()
+        - getById()
+        - update() 
+	- delete()
+
+    0.4.2 – Pages
+    0.4.2.1 – Roles
+        - add_role.php
+        - manage_role.php
+        - edit_role.php
+
+   0.4.3 – Admin Controller Updates
+	 - admin.php (role functions)
+	 - newRole()
+	 - manageRoles() (List, delete roles)
+	 - editRole()
+
+
+0.5.1 – Classes
+ 0.5.1.1 – Company.php
+        - register() 
+        - getAll()
+        - getById()
+        - update() 
+	- delete()
+
+0.5.1.2 – Location.php
+        - register() 
+        - getAll()  (Get all companies with first location)
+	- getByCompany()  (Get locations by company)
+        - getById() (Get location by ID)
+        - update() 
+	- delete()
+
+    0.5.2 – Pages
+    0.5.2.1 – Companies
+        - add_company.php ( Add Company + Location form)
+        - manage_company.php ( Manage Companies table (List + Delete + Edit buttons))
+        - edit_company.php ( Edit Company + Location form)
+
+   0.5.3 – Admin Controller Updates
+	 - admin.php ( Added company/location functions)
+	 - newCompany() ( Create company & first location)
+	 - manageCompanies() ( List, delete companies)
+	 - editCompany() ( Edit company & first location)
+
+
+
+
+      
+
+
+
+
