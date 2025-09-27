@@ -14,7 +14,6 @@
 
   <!-- Nav Item - Dashboard -->
   <li class="nav-item active">
-    <!-- Dashboard link points to controller (admin.php) -->
     <a class="nav-link" href="<?= BASE_URL ?>/admin.php">
       <i class="fas fa-fw fa-tachometer-alt"></i>
       <span>Dashboard</span>
@@ -37,9 +36,36 @@
     </a>
     <div id="collapseUsers" class="collapse" aria-labelledby="headingUsers" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
-        <!-- ✅ Updated links to go through admin.php controller -->
         <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageUsers">Manage Users</a>
         <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newUser">Add User</a>
+      </div>
+    </div>
+  </li>
+
+  <!-- Roles Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRoles" aria-expanded="true" aria-controls="collapseRoles">
+      <i class="fas fa-user-tag"></i>
+      <span>Roles</span>
+    </a>
+    <div id="collapseRoles" class="collapse" aria-labelledby="headingRoles" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageRoles">Manage Roles</a>
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newRole">Add Role</a>
+      </div>
+    </div>
+  </li>
+
+  <!-- Companies Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCompanies" aria-expanded="true" aria-controls="collapseCompanies">
+      <i class="fas fa-city"></i>
+      <span>Companies</span>
+    </a>
+    <div id="collapseCompanies" class="collapse" aria-labelledby="headingCompanies" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageCompanies">Manage Companies</a>
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newCompany">Add Company</a>
       </div>
     </div>
   </li>
@@ -52,7 +78,6 @@
     </a>
     <div id="collapseProperties" class="collapse" aria-labelledby="headingProperties" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
-        <!-- ✅ Updated links to go through admin.php controller -->
         <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageProperties">Manage Properties</a>
         <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newProperty">Add Property</a>
       </div>
