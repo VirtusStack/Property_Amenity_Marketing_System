@@ -36,10 +36,10 @@ $results['users']     = $results['users'] ?? [];
                 <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800"><?= htmlspecialchars($results['pageTitle']) ?></h1>
 
-           <!-- Feedback message (success or error) -->
-          <?php if (!empty($results['message'])): ?>
-       <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
-                     <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
+                <!-- Feedback message (success or error) -->
+                <?php if (!empty($results['message'])): ?>
+                    <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
+                        <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
                         <?= htmlspecialchars($results['message']) ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -50,7 +50,7 @@ $results['users']     = $results['users'] ?? [];
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-bordered">
-                                <thead class="thead-dark">
+                                <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
@@ -92,17 +92,23 @@ $results['users']     = $results['users'] ?? [];
                                                 </td>
                                                 <td><?= $user['created_at'] ?></td>
                                                 <td>
-                             <!-- Edit button -->
-                             <a class="btn btn-sm btn-primary" href="<?= BASE_URL ?>/admin.php?action=editUser&id=<?= $user['user_id'] ?>">Edit</a>
-                             <!-- Delete button with confirmation -->
-                             <a class="btn btn-sm btn-danger" href="<?= BASE_URL ?>/admin.php?action=manageUsers&delete=<?= $user['user_id'] ?>"
-                                                       onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+                                                    <!-- Edit button (yellow like Roles screen) -->
+                                                    <a class="btn btn-sm btn-warning" href="<?= BASE_URL ?>/admin.php?action=editUser&id=<?= $user['user_id'] ?>">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <!-- Delete button (red like Roles screen) -->
+                                                    <a class="btn btn-sm btn-danger" href="<?= BASE_URL ?>/admin.php?action=manageUsers&delete=<?= $user['user_id'] ?>"
+                                                       onclick="return confirm('Are you sure you want to delete this user?');">
+                                                       <i class="bi bi-trash"></i> Delete
+                                                    </a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <!-- No users found -->
-                                        <tr><td colspan="8">No users found.</td></tr>
+                                        <tr>
+                                            <td colspan="8" class="text-center">No users found.</td>
+                                        </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
