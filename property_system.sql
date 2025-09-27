@@ -6,40 +6,49 @@
 --
 -- Table structure for table `companies`
 --
-
 CREATE TABLE `companies` (
   `company_id` int(11) NOT NULL,
   `company_name` varchar(150) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `description` text DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `website` varchar(100) DEFAULT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `companies`
 --
+INSERT INTO `companies` (`company_id`, `company_name`, `created_at`, `description`, `email`, `phone`, `website`, `is_deleted`) VALUES
+(1, 'Default Company', '2025-09-22 14:17:08', '', '', '', '', 0),
+(2, 'SilverStone Realty', '2025-09-26 08:23:34', '', '', '0233758449', 'https://www.silverline.com', 0),
 
-INSERT INTO `companies` (`company_id`, `company_name`, `created_at`) VALUES
-(1, 'Default Company', '2025-09-22 14:17:08');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `locations`
 --
-
 CREATE TABLE `locations` (
   `location_id` int(11) NOT NULL,
   `company_id` int(11) NOT NULL,
   `location_name` varchar(150) NOT NULL,
   `address` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `phone` varchar(20) DEFAULT NULL,
+  `manager_name` varchar(100) DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `locations`
 --
 
-INSERT INTO `locations` (`location_id`, `company_id`, `location_name`, `address`, `created_at`) VALUES
-(2, 1, 'Head Office', NULL, '2025-09-23 05:14:37');
+
+INSERT INTO `locations` (`location_id`, `company_id`, `location_name`, `address`, `created_at`, `phone`, `manager_name`, `created_by`, `is_deleted`)VALUES
+(2, 1, 'Riverside Center', '66 Central Plaza, Midtown', '2025-09-24 05:14:37', '', '', NULL, 0),
 
 -- --------------------------------------------------------
 
@@ -80,9 +89,10 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`role_id`, `role_name`, `can_create`, `can_read`, `can_update`, `can_delete`, `company_id`, `created_at`) VALUES
-(1, 'Admin', 1, 1, 1, 1, 1, '2025-09-20 14:17:08'),
-(2, 'Manager', 1, 1, 1, 0, 1, '2025-09-22 14:04:14'),
-(3, 'Staff', 0, 1, 0, 0, 1, '2025-09-22 14:04:14');
+(1, 'Admin', 1, 1, 1, 1, 1, '2025-09-22 14:17:08'),
+(2, 'Manager', 1, 1, 1, 0, 1, '2025-09-23 14:04:14'),
+(3, 'Staff', 0, 1, 0, 0, 1, '2025-09-24 14:04:14'),
+(4, 'Accountant', 0, 1, 1, 0, 2, '2025-09-25 09:44:38');
 
 --
 
@@ -98,6 +108,7 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
