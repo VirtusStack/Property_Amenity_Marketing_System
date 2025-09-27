@@ -2,15 +2,22 @@
 // -------------------------
 // MANAGE COMPANIES TEMPLATE
 // -------------------------
-// This template displays a table of all companies along with their first location.
+// This template displays a table of all companies.
 // It includes Edit and Delete actions for each company.
+// Pagination is handled via SQL LIMIT/OFFSET.
 
 // Ensure $results array is defined
 $results = $results ?? [
-    'pageTitle' => 'Manage Companies',
-    'message'   => '',
-    'companies' => []
+    'pageTitle'   => 'Manage Companies',
+    'message'     => '',
+    'companies'   => [],
+    'currentPage' => 1,
+    'totalPages'  => 1
 ];
+
+$companies   = $results['companies'];
+$currentPage = $results['currentPage'];
+$totalPages  = $results['totalPages'];
 ?>
 
 <?php include __DIR__ . "/../include/header.php"; ?>
@@ -28,69 +35,63 @@ $results = $results ?? [
 
             <div class="container-fluid">
 
-                <!-- Page Heading -->
-                <h1 class="h3 mb-4 text-gray-800"><?= htmlspecialchars($results['pageTitle']) ?></h1>
+                <!-- Page Heading with Add Company Button -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 text-gray-800"><?= htmlspecialchars($results['pageTitle']) ?></h1>
+                    <a href="<?= BASE_URL ?>/admin.php?action=newCompany" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add Company
+                    </a>
+                </div>
 
-                <!-- Feedback message (success/error) -->
+                <!-- Feedback message -->
                 <?php if (!empty($results['message'])): ?>
                     <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
                         <?= htmlspecialchars($results['message']) ?>
-                        <!-- Close button for alert -->
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
 
                 <!-- Companies Table Card -->
                 <div class="card shadow mb-4">
-                    <!-- Card Header -->
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary"><?= htmlspecialchars($results['pageTitle']) ?></h6>
-                    </div>
-
-                    <!-- Card Body -->
-                    <div class="card-body">
+                                        <div class="card-body">
                         <div class="table-responsive">
-                            <!-- Table -->
-                            <table class="table table-bordered">
-                                <thead>
+                            <table class="table table-bordered ">
+                                <!-- Use light header instead of black -->
+                                <thead class="table-light">
                                     <tr>
                                         <th>ID</th>
                                         <th>Company Name</th>
-                                        <th>Location</th>
-                                        <th>Address</th>
+                                        <th>Description</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Website</th>
                                         <th>Created At</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Check if there are companies -->
-                                    <?php if (!empty($results['companies'])): ?>
-                                        <?php foreach ($results['companies'] as $company): ?>
+                                    <?php if (!empty($companies)): ?>
+                                        <?php foreach ($companies as $company): ?>
                                             <tr>
-                                                <!-- Company ID -->
                                                 <td><?= $company['company_id'] ?></td>
-
-                                                <!-- Company Name -->
                                                 <td><?= htmlspecialchars($company['company_name']) ?></td>
-
-                                                <!-- Location Name (show '-' if not available) -->
-                                                <td><?= htmlspecialchars($company['location_name'] ?? '-') ?></td>
-
-                                                <!-- Address (show '-' if not available) -->
-                                                <td><?= htmlspecialchars($company['address'] ?? '-') ?></td>
-
-                                                <!-- Created At (show '-' if not available) -->
-                                                <td><?= htmlspecialchars($company['created_at'] ?? '-') ?></td>
-
-                                                <!-- Actions: Edit & Delete -->
+                                                <td><?= htmlspecialchars($company['description'] ?? '-') ?></td>
+                                                <td><?= htmlspecialchars($company['email'] ?? '-') ?></td>
+                                                <td><?= htmlspecialchars($company['phone'] ?? '-') ?></td>
                                                 <td>
-                                                    <!-- Edit button -->
+                                                    <?php if (!empty($company['website'])): ?>
+                                                        <a href="<?= htmlspecialchars($company['website']) ?>" target="_blank"><?= htmlspecialchars($company['website']) ?></a>
+                                                    <?php else: ?>
+                                                        -
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?= htmlspecialchars($company['created_at'] ?? '-') ?></td>
+                                                <td>
+                                                    <!-- Original button colors -->
                                                     <a class="btn btn-sm btn-warning" 
                                                        href="<?= BASE_URL ?>/admin.php?action=editCompany&id=<?= $company['company_id'] ?>">
                                                        <i class="bi bi-pencil-square"></i> Edit
                                                     </a>
-
-                                                    <!-- Delete button -->
                                                     <a class="btn btn-sm btn-danger" 
                                                        href="<?= BASE_URL ?>/admin.php?action=manageCompanies&delete=<?= $company['company_id'] ?>" 
                                                        onclick="return confirm('Are you sure you want to delete this company?');">
@@ -100,13 +101,40 @@ $results = $results ?? [
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <!-- No companies found -->
                                         <tr>
-                                            <td colspan="6" class="text-center">No companies found.</td>
+                                            <td colspan="8" class="text-center">No companies found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
+
+                            <!-- Pagination Links with Next/Previous -->
+                            <?php if ($totalPages > 1): ?>
+                                <nav>
+                                    <ul class="pagination justify-content-center">
+                                        <!-- Previous Button -->
+                                        <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
+                                            <a class="page-link" 
+                                               href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= max(1, $currentPage-1) ?>" 
+                                               tabindex="-1">Previous</a>
+                                        </li>
+
+                                        <!-- Numbered Pages -->
+                                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                            <li class="page-item <?= $i === $currentPage ? 'active' : '' ?>">
+                                                <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= $i ?>"><?= $i ?></a>
+                                            </li>
+                                        <?php endfor; ?>
+
+                                        <!-- Next Button -->
+                                        <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
+                                            <a class="page-link" 
+                                               href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= min($totalPages, $currentPage+1) ?>">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            <?php endif; ?>
+
                         </div>
                     </div>
                 </div>
