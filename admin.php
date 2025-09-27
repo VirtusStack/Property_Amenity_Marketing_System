@@ -248,25 +248,15 @@ function newCompany() {
         $phone         = trim($_POST['phone']         ?? '');
         $website       = trim($_POST['website']       ?? '');
 
-        // ✅ Collect location fields safely
-        $location_name = trim($_POST['location_name'] ?? '');
-        $address       = trim($_POST['address']       ?? '');
-        $loc_phone     = trim($_POST['loc_phone']     ?? '');
-        $manager_name  = trim($_POST['manager_name']  ?? '');
-
         if (empty($company_name)) {
             $results['message'] = "❌ Company name is required!";
         } else {
-            // First insert company
+            // Insert company 
             $companyId = Company::register($pdo, $company_name, $description, $email, $phone, $website);
             if ($companyId) {
-                // Then insert location (only if provided)
-                if (!empty($location_name)) {
-                    Location::register($pdo, $companyId, $location_name, $address, $loc_phone, $manager_name);
-                }
-                $results['message'] = "✅ Company and location added successfully!";
+                $results['message'] = "✅ Company added successfully !";
                 // Clear fields
-                $company_name = $description = $email = $phone = $website = $location_name = $address = $loc_phone = $manager_name = '';
+                $company_name = $description = $email = $phone = $website = '';
             } else {
                 $results['message'] = "❌ Error adding company!";
             }
@@ -278,7 +268,11 @@ function newCompany() {
 
 function manageCompanies() {
     global $pdo;
-    $results = ['message' => '', 'pageTitle' => 'Manage Companies'];
+    $results = [
+        'message'   => '',
+        'pageTitle' => 'Manage Companies',
+        'companies' => []
+    ];
 
     // Handle delete request
     if (isset($_GET['delete'])) {
@@ -290,35 +284,45 @@ function manageCompanies() {
         }
     }
 
-    // ✅ Fetch companies with first location using LEFT JOIN
-    $stmt = $pdo->query("
-        SELECT 
-            c.company_id, c.company_name, c.description, c.email, c.phone, c.website,
-            c.created_at,
-            l.location_name, l.address
-        FROM companies c
-        LEFT JOIN locations l 
-            ON c.company_id = l.company_id AND l.is_deleted = 0
-        WHERE c.is_deleted = 0
-        ORDER BY c.company_id DESC
+    // --- Pagination Settings ---
+    $perPage = 10; // companies per page
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    $offset = ($page - 1) * $perPage;
+
+    // Fetch total number of companies
+    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM companies WHERE is_deleted = 0");
+    $total = (int)$stmtTotal->fetchColumn();
+    $totalPages = ceil($total / $perPage);
+
+    // Fetch companies for current page, **oldest first** (ID 1–10 on page 1)
+    $stmt = $pdo->prepare("
+        SELECT company_id, company_name, description, email, phone, website, created_at
+        FROM companies
+        WHERE is_deleted = 0
+        ORDER BY company_id ASC    -- ASC ensures 1–10 on first page
+        LIMIT :limit OFFSET :offset
     ");
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
     $results['companies'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Pass pagination info to template
+    $results['currentPage'] = $page;
+    $results['totalPages']  = $totalPages;
 
     require(TEMPLATE_PATH . "/companies/manage_company.php");
 }
-
 
 function editCompany() {
     global $pdo;
     $results = ['message' => '', 'pageTitle' => 'Edit Company'];
 
-    // Ensure we have a company ID to edit
     if (!isset($_GET['id'])) die("❌ No company ID given.");
     $companyId = (int)$_GET['id'];
 
-    // Fetch company and first location (if any)
-    $company  = Company::getById($pdo, $companyId);
-    $location = Location::getByCompany($pdo, $companyId)[0] ?? null;
+    // Fetch company
+    $company = Company::getById($pdo, $companyId);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // --- Collect company data safely ---
@@ -337,40 +341,14 @@ function editCompany() {
             $results['message'] = "❌ Error updating company!";
         }
 
-        // --- Collect location data safely ---
-        $locationData = [
-            'location_name' => trim($_POST['location_name'] ?? ''),
-            'address'       => trim($_POST['address'] ?? ''),
-            'phone'         => trim($_POST['loc_phone'] ?? ''),
-            'manager_name'  => trim($_POST['manager_name'] ?? ''),
-        ];
-
-        // Update existing location or create new if none exists
-        if ($location) {
-            Location::update($pdo, $location['location_id'], $locationData);
-        } elseif (!empty($locationData['location_name'])) {
-            Location::register(
-                $pdo,
-                $companyId,
-                $locationData['location_name'],
-                $locationData['address'],
-                $locationData['phone'],
-                $locationData['manager_name']
-            );
-        }
-
-        // Reload updated company and location for pre-fill
-        $company  = Company::getById($pdo, $companyId);
-        $location = Location::getByCompany($pdo, $companyId)[0] ?? null;
+        // Reload updated company for pre-fill
+        $company = Company::getById($pdo, $companyId);
     }
 
-    // Pass data to the template
-    $results['company']  = $company;
-    $results['location'] = $location;
+    $results['company'] = $company;
 
     require(TEMPLATE_PATH . "/companies/edit_company.php");
 }
-
 
 // -------------------------
 // ROLE MANAGEMENT
