@@ -55,6 +55,21 @@ $currentUserRole = "Admin";
                         </div>
                     </div>
 
+                     <!-- Companies Card -->
+    		     <div class="col-xl-4 col-md-6 mb-4">
+        	        <div class="card border-left-warning shadow h-100 py-2">
+            		   <div class="card-body">
+                	     <div class="card-title"><i class="fas fa-city"></i> Companies</div>
+                	     <div class="card-text">
+                    		<!-- ✅ Controller-based links -->
+                   	        <p><a href="<?= BASE_URL ?>/admin.php?action=manageCompanies">Manage Companies</a></p>
+                    		<p><a href="<?= BASE_URL ?>/admin.php?action=newCompany">Add Company</a></p>
+                	    </div>
+           	        </div>
+       	            </div>
+                </div>
+
+
                     <!-- Roles Card -->
                     <div class="col-xl-4 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">
@@ -68,6 +83,7 @@ $currentUserRole = "Admin";
                         </div>
                     </div>
 
+                   
                     <!-- Properties Card -->
                     <div class="col-xl-4 col-md-6 mb-4">
                         <div class="card border-left-info shadow h-100 py-2">
