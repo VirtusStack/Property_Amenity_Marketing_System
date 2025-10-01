@@ -2,22 +2,26 @@
 // -------------------------
 // MANAGE COMPANIES TEMPLATE
 // -------------------------
-// This template displays a table of all companies.
-// It includes Edit and Delete actions for each company.
-// Pagination is handled via SQL LIMIT/OFFSET.
+// Displays companies with Edit/Delete actions
+// Includes numbered pagination and a dropdown+Go AFTER the Next button.
+// -------------------------
 
-// Ensure $results array is defined
 $results = $results ?? [
     'pageTitle'   => 'Manage Companies',
     'message'     => '',
     'companies'   => [],
     'currentPage' => 1,
-    'totalPages'  => 1
+    'totalPages'  => 1,
+    'total'       => 0,
+    'perPage'     => 10
 ];
 
 $companies   = $results['companies'];
-$currentPage = $results['currentPage'];
-$totalPages  = $results['totalPages'];
+$currentPage = (int)($results['currentPage'] ?? 1);
+$totalPages  = (int)($results['totalPages'] ?? 1);
+$total       = (int)($results['total'] ?? count($companies));
+$perPage     = (int)($results['perPage'] ?? count($companies));
+$offset      = ($currentPage - 1) * $perPage;
 ?>
 
 <?php include __DIR__ . "/../include/header.php"; ?>
@@ -44,19 +48,27 @@ $totalPages  = $results['totalPages'];
                 </div>
 
                 <!-- Feedback message -->
-                <?php if (!empty($results['message'])): ?>
-                    <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
-                        <?= htmlspecialchars($results['message']) ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
+	          <?php if (!empty($results['message'])): ?>
+    		<div class="alert <?= (stripos($results['message'], 'success') !== false) ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
+       		 <?= (stripos($results['message'], 'success') !== false)  ? '<i class="fas fa-check-circle"></i>'  : '<i class="fas fa-times-circle"></i>' ?>
+      		  <?= htmlspecialchars($results['message']) ?>
+       		 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            	<span aria-hidden="true">&times;</span>
+       		 </button>
+   		 </div>
+		<?php endif; ?>
+
 
                 <!-- Companies Table Card -->
                 <div class="card shadow mb-4">
-                                        <div class="card-body">
+                    <div class="card-header py-3">
+                        <!-- Keep original color -->
+                        <h6 class="m-0 font-weight-bold text-gray-800"><?= htmlspecialchars($results['pageTitle']) ?></h6>
+                    </div>
+
+                    <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered ">
-                                <!-- Use light header instead of black -->
+                            <table class="table table-bordered table-striped">
                                 <thead class="table-light">
                                     <tr>
                                         <th>ID</th>
@@ -79,24 +91,29 @@ $totalPages  = $results['totalPages'];
                                                 <td><?= htmlspecialchars($company['email'] ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($company['phone'] ?? '-') ?></td>
                                                 <td>
-                                                    <?php if (!empty($company['website'])): ?>
-                                                        <a href="<?= htmlspecialchars($company['website']) ?>" target="_blank"><?= htmlspecialchars($company['website']) ?></a>
+                                                 <?php if (!empty($company['website'])): ?>
+                                                <a href="<?= htmlspecialchars($company['website']) ?>" target="_blank"><?= htmlspecialchars($company['website']) ?></a>
                                                     <?php else: ?>
                                                         -
                                                     <?php endif; ?>
                                                 </td>
                                                 <td><?= htmlspecialchars($company['created_at'] ?? '-') ?></td>
                                                 <td>
-                                                    <!-- Original button colors -->
+                                                    <!-- Edit link -->
                                                     <a class="btn btn-sm btn-warning" 
                                                        href="<?= BASE_URL ?>/admin.php?action=editCompany&id=<?= $company['company_id'] ?>">
                                                        <i class="bi bi-pencil-square"></i> Edit
                                                     </a>
-                                                    <a class="btn btn-sm btn-danger" 
-                                                       href="<?= BASE_URL ?>/admin.php?action=manageCompanies&delete=<?= $company['company_id'] ?>" 
-                                                       onclick="return confirm('Are you sure you want to delete this company?');">
-                                                       <i class="bi bi-trash"></i> Delete
-                                                    </a>
+
+                                                    <!-- Delete uses a GET form with onsubmit confirm -->
+                                                    <form method="get" action="<?= BASE_URL ?>/admin.php" style="display:inline-block; margin:0 4px;"
+                                                          onsubmit="return confirm('Are you sure you want to delete this company?');">
+                                                        <input type="hidden" name="action" value="manageCompanies">
+                                                        <input type="hidden" name="delete" value="<?= $company['company_id'] ?>">
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            <i class="bi bi-trash"></i> Delete
+                                                        </button>
+                                                    </form>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -107,35 +124,47 @@ $totalPages  = $results['totalPages'];
                                     <?php endif; ?>
                                 </tbody>
                             </table>
-
-                            <!-- Pagination Links with Next/Previous -->
-                            <?php if ($totalPages > 1): ?>
-                                <nav>
-                                    <ul class="pagination justify-content-center">
-                                        <!-- Previous Button -->
-                                        <li class="page-item <?= $currentPage <= 1 ? 'disabled' : '' ?>">
-                                            <a class="page-link" 
-                                               href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= max(1, $currentPage-1) ?>" 
-                                               tabindex="-1">Previous</a>
-                                        </li>
-
-                                        <!-- Numbered Pages -->
-                                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                            <li class="page-item <?= $i === $currentPage ? 'active' : '' ?>">
-                                                <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= $i ?>"><?= $i ?></a>
-                                            </li>
-                                        <?php endfor; ?>
-
-                                        <!-- Next Button -->
-                                        <li class="page-item <?= $currentPage >= $totalPages ? 'disabled' : '' ?>">
-                                            <a class="page-link" 
-                                               href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= min($totalPages, $currentPage+1) ?>">Next</a>
-                                        </li>
-                                    </ul>
-                                </nav>
-                            <?php endif; ?>
-
                         </div>
+
+                        <!-- Pagination controls -->
+                        <?php if ($totalPages > 1): ?>
+                            <nav aria-label="Company pagination">
+                                <ul class="pagination justify-content-center align-items-center">
+
+                                    <!-- Previous button -->
+                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= max(1, $currentPage - 1) ?>">Previous</a>
+                                    </li>
+
+                                    <!-- Numbered pages -->
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="page-item <?= ($i === $currentPage) ? 'active' : '' ?>">
+                                            <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= $i ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+
+                                    <!-- Next button -->
+                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                                   <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= min($totalPages, $currentPage + 1) ?>">Next</a>
+                                    </li>
+
+                                    <!-- Dropdown + Go (AFTER Next) -->
+                                    <li class="page-item ms-2">
+                                        <form method="get" action="<?= BASE_URL ?>/admin.php" class="d-flex" style="gap:6px;">
+                                            <input type="hidden" name="action" value="manageCompanies">
+                                            <select name="page" class="form-select form-select-sm">
+                                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                                    <option value="<?= $i ?>" <?= ($i === $currentPage) ? 'selected' : '' ?>>Page <?= $i ?></option>
+                                                <?php endfor; ?>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-primary">Go</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </nav>
+
+                         <?php endif; ?>
+
                     </div>
                 </div>
                 <!-- End of Companies Table Card -->
