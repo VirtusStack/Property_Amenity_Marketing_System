@@ -70,6 +70,20 @@
     </div>
   </li>
 
+  <!-- Locations Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLocations" aria-expanded="true" aria-controls="collapseLocations">
+      <i class="fas fa-map-marker-alt"></i>
+      <span>Locations</span>
+    </a>
+    <div id="collapseLocations" class="collapse" aria-labelledby="headingLocations" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageLocations">Manage Locations</a>
+        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newLocation">Add Location</a>
+      </div>
+    </div>
+  </li>
+
   <!-- Properties Menu -->
   <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProperties" aria-expanded="true" aria-controls="collapseProperties">
