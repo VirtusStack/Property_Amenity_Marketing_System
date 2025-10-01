@@ -31,14 +31,17 @@ require_once __DIR__ . '/../../config/config.php';
                     <?= isset($results['pageTitle']) ? $results['pageTitle'] : 'Add Company' ?>
                 </h1>
 
-                <!-- Feedback message -->
-                <?php if (!empty($results['message'])): ?>
-                    <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
-                        <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
-                        <?= htmlspecialchars($results['message']) ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
+               <!-- Feedback message -->
+	        <?php if (!empty($results['message'])): ?>
+    		<div class="alert <?= (stripos($results['message'], 'success') !== false) ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
+       		 <?= (stripos($results['message'], 'success') !== false)  ? '<i class="fas fa-check-circle"></i>'  : '<i class="fas fa-times-circle"></i>' ?>
+      		  <?= htmlspecialchars($results['message']) ?>
+       		 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            	<span aria-hidden="true">&times;</span>
+       		 </button>
+   		 </div>
+		<?php endif; ?>
+
 
                 <!-- Company Form Card -->
                 <div class="card shadow mb-4">
