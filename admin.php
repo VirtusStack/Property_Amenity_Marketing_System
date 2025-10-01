@@ -81,6 +81,20 @@ switch ($action) {
         editCompany();
         break;
 
+// Location management
+case 'newLocation':
+    newLocation();
+    break;
+
+case 'manageLocations':
+    manageLocations();
+    break;
+
+case 'editLocation':
+    editLocation();
+    break;
+
+
 // Role management
     case 'newRole':
     newRole(); 
@@ -169,9 +183,9 @@ function newUser() {
         $location_id = $_POST['location_id'] ?? null;
 
         if (User::register($pdo, $name, $email, $password, $role_id, $company_id, $location_id)) {
-            $results['message'] = "✅ User added successfully!";
+            $results['message'] = " User added successfully!";
         } else {
-            $results['message'] = "❌ Error adding user!";
+            $results['message'] = " Error adding user!";
         }
     }
 
@@ -189,9 +203,9 @@ function manageUsers() {
     if (isset($_GET['delete'])) {
         $userId = (int)$_GET['delete'];
         if (User::delete($pdo, $userId)) {
-            $results['message'] = "✅ User deleted!";
+            $results['message'] = " User deleted!";
         } else {
-            $results['message'] = "❌ Error deleting user!";
+            $results['message'] = " Error deleting user!";
         }
     }
 
@@ -203,7 +217,7 @@ function editUser() {
     global $pdo;
     $results = ['message' => '', 'pageTitle' => 'Edit User'];
 
-    if (!isset($_GET['id'])) die("❌ No user ID given.");
+    if (!isset($_GET['id'])) die(" No user ID given.");
     $userId = (int)$_GET['id'];
     $user   = User::getById($pdo, $userId);
 
@@ -218,10 +232,10 @@ function editUser() {
         ];
 
         if (User::update($pdo, $userId, $data)) {
-            $results['message'] = "✅ User updated!";
+            $results['message'] = " User updated!";
             $user = User::getById($pdo, $userId);
         } else {
-            $results['message'] = "❌ Error updating user!";
+            $results['message'] = " Error updating user!";
         }
     }
 
@@ -249,16 +263,16 @@ function newCompany() {
         $website       = trim($_POST['website']       ?? '');
 
         if (empty($company_name)) {
-            $results['message'] = "❌ Company name is required!";
+            $results['message'] = " Company name is required!";
         } else {
             // Insert company 
             $companyId = Company::register($pdo, $company_name, $description, $email, $phone, $website);
             if ($companyId) {
-                $results['message'] = "✅ Company added successfully !";
+                $results['message'] = " Company added successfully !";
                 // Clear fields
                 $company_name = $description = $email = $phone = $website = '';
             } else {
-                $results['message'] = "❌ Error adding company!";
+                $results['message'] = " Error adding company!";
             }
         }
     }
@@ -278,14 +292,14 @@ function manageCompanies() {
     if (isset($_GET['delete'])) {
         $companyId = (int)$_GET['delete'];
         if (Company::delete($pdo, $companyId)) {
-            $results['message'] = "✅ Company deleted!";
+            $results['message'] = " Company deleted!";
         } else {
-            $results['message'] = "❌ Error deleting company!";
+            $results['message'] = " Error deleting company!";
         }
     }
 
     // --- Pagination Settings ---
-    $perPage = 10; // companies per page
+    $perPage = 25; // companies per page
     $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
     $offset = ($page - 1) * $perPage;
 
@@ -318,7 +332,7 @@ function editCompany() {
     global $pdo;
     $results = ['message' => '', 'pageTitle' => 'Edit Company'];
 
-    if (!isset($_GET['id'])) die("❌ No company ID given.");
+    if (!isset($_GET['id'])) die(" No company ID given.");
     $companyId = (int)$_GET['id'];
 
     // Fetch company
@@ -336,9 +350,9 @@ function editCompany() {
 
         // Update company
         if (Company::update($pdo, $companyId, $companyData)) {
-            $results['message'] = "✅ Company updated!";
+            $results['message'] = " Company updated successfully!";
         } else {
-            $results['message'] = "❌ Error updating company!";
+            $results['message'] = " Error updating company!";
         }
 
         // Reload updated company for pre-fill
@@ -349,6 +363,144 @@ function editCompany() {
 
     require(TEMPLATE_PATH . "/companies/edit_company.php");
 }
+
+// -------------------------
+// LOCATION MANAGEMENT
+// -------------------------
+function newLocation() {
+    global $pdo;
+
+    $results = [
+        'message' => '',
+        'pageTitle' => 'Add New Location',
+        'companies' => [],   // This will hold companies for dropdown
+    ];
+
+    // Fetch all companies (not deleted) for the dropdown
+    $results['companies'] = Company::getAll($pdo);
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Collect POST data
+        $company_id       = $_POST['company_id'] ?? '';
+        $location_name    = trim($_POST['location_name'] ?? '');
+        $place            = trim($_POST['place'] ?? '');
+        $country          = trim($_POST['country'] ?? '');
+        $state            = trim($_POST['state'] ?? '');
+        $city             = trim($_POST['city'] ?? '');
+        $contact_number   = trim($_POST['contact_number'] ?? '');
+        $manager          = trim($_POST['manager'] ?? '');
+        $created_by       = $_SESSION['user_id'] ?? null;
+
+        // Validation
+        if (empty($company_id) || empty($location_name)) {
+            $results['message'] = " Please select company and enter location name!";
+        } else {
+            if (Location::register($pdo, $company_id, $location_name, $place, $country, $state, $city, $contact_number, $manager, $created_by)) {
+                $results['message'] = " Location added successfully!";
+                // Clear form values
+                foreach(['company_id','location_name','place','country','state','city','contact_number','manager'] as $f) {
+                    $results[$f] = '';
+                }
+            } else {
+                $results['message'] = " Error adding location!";
+            }
+        }
+    }
+
+    require(TEMPLATE_PATH . "/locations/add_location.php");
+}
+
+// -------------------------
+// MANAGE LOCATIONS
+// -------------------------
+function manageLocations() {
+    global $pdo;
+
+    $results = [
+        'message'   => '',
+        'pageTitle' => 'Manage Locations',
+        'locations' => []
+    ];
+
+    // Handle delete request
+    if (isset($_GET['delete'])) {
+        $locationId = (int)$_GET['delete'];
+        if (Location::delete($pdo, $locationId)) {
+            $results['message'] = " Location deleted!";
+        } else {
+            $results['message'] = " Error deleting location!";
+        }
+    }
+
+    // --- Pagination Settings ---
+    $perPage = 25; // locations per page
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    $offset = ($page - 1) * $perPage;
+
+    // Fetch total number of locations (only non-deleted)
+    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM locations WHERE is_deleted = 0");
+    $total = (int)$stmtTotal->fetchColumn();
+    $totalPages = ceil($total / $perPage);
+
+    // Fetch locations for current page with company info
+    $stmt = $pdo->prepare("
+        SELECT l.location_id, l.location_name, l.place, l.country, l.state, l.city, l.contact_number, l.manager, l.created_at AS location_created_at,
+               c.company_id, c.company_name
+        FROM locations l
+        LEFT JOIN companies c ON l.company_id = c.company_id
+        WHERE l.is_deleted = 0
+        ORDER BY l.location_id ASC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    $results['locations'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Pass pagination info to template
+    $results['currentPage'] = $page;
+    $results['totalPages']  = $totalPages;
+    $results['total']       = $total;
+    $results['perPage']     = $perPage;
+
+    require(TEMPLATE_PATH . "/locations/manage_location.php");
+}
+
+function editLocation() {
+    global $pdo;
+    $results = ['message' => '', 'pageTitle' => 'Edit Location'];
+
+    if (!isset($_GET['id'])) die(" No location ID given.");
+    $locationId = (int)$_GET['id'];
+
+    // Get location
+    $location = Location::getById($pdo, $locationId);
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $locationData = [
+            'location_name'  => trim($_POST['location_name'] ?? ''),
+            'place'          => trim($_POST['place'] ?? ''),
+            'country'        => trim($_POST['country'] ?? ''),
+            'state'          => trim($_POST['state'] ?? ''),
+            'city'           => trim($_POST['city'] ?? ''),
+            'contact_number' => trim($_POST['contact_number'] ?? ''),
+            'manager'        => trim($_POST['manager'] ?? ''),
+        ];
+
+        if (Location::update($pdo, $locationId, $locationData)) {
+            $results['message'] = " Location updated successfully!";
+            $location = Location::getById($pdo, $locationId); // refresh
+        } else {
+            $results['message'] = " Error updating location!";
+        }
+    }
+
+    $results['location']  = $location;
+    $results['companies'] = Company::getAll($pdo);
+
+    require(TEMPLATE_PATH . "/locations/edit_location.php");
+}
+
 
 // -------------------------
 // ROLE MANAGEMENT
@@ -368,9 +520,9 @@ function newRole() {
         ];
 
         if (Role::create($pdo, $role_name, $company_id, $permissions)) {
-            $results['message'] = "✅ Role added successfully!";
+            $results['message'] = " Role added successfully!";
         } else {
-            $results['message'] = "❌ Error adding role!";
+            $results['message'] = " Error adding role!";
         }
     }
 
@@ -385,9 +537,9 @@ function manageRoles() {
     if (isset($_GET['delete'])) {
         $roleId = (int)$_GET['delete'];
         if (Role::delete($pdo, $roleId)) {
-            $results['message'] = "✅ Role deleted!";
+            $results['message'] = " Role deleted!";
         } else {
-            $results['message'] = "❌ Error deleting role!";
+            $results['message'] = " Error deleting role!";
         }
     }
 
@@ -422,10 +574,10 @@ function editRole() {
             $results['message'] = "❌ Role name is required!";
         } else {
             if (Role::update($pdo, $roleId, $roleName, $permissions)) {
-                $results['message'] = "✅ Role updated successfully!";
+                $results['message'] = " Role updated successfully!";
                 $role = Role::getById($pdo, $roleId); // refresh data
             } else {
-                $results['message'] = "❌ Error updating role!";
+                $results['message'] = " Error updating role!";
             }
         }
     }
