@@ -69,6 +69,19 @@ $currentUserRole = "Admin";
        	            </div>
                 </div>
 
+		     <!-- Location Card -->
+    		     <div class="col-xl-4 col-md-6 mb-4">
+        	        <div class="card border-left-danger shadow h-100 py-2">
+            		   <div class="card-body">
+                	     <div class="card-title"><i class="fas fa-map-marker-alt"></i> Locations</div>
+                	     <div class="card-text">
+                    		<!-- ✅ Controller-based links -->
+                   	       <p><a href="<?= BASE_URL ?>/admin.php?action=manageLocations">Manage Locations</a></p>
+               		       <p><a href="<?= BASE_URL ?>/admin.php?action=newLocation">Add Location</a></p>
+                	    </div>
+           	        </div>
+       	            </div>
+                </div>
 
                     <!-- Roles Card -->
                     <div class="col-xl-4 col-md-6 mb-4">
