@@ -78,7 +78,6 @@ $offset      = ($currentPage - 1) * $perPage;
                                         <th>City</th>
                                         <th>Contact</th>
                                         <th>Manager</th>
-                                        <th>Created At</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -95,8 +94,7 @@ $offset      = ($currentPage - 1) * $perPage;
                                                 <td><?= htmlspecialchars($loc['city'] ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($loc['contact_number'] ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($loc['manager'] ?? '-') ?></td>
-                                                <td><?= htmlspecialchars($loc['created_at'] ?? '-') ?></td>
-                                                <td>
+                                                                                               <td>
                                                     <!-- Edit button -->
                                                     <a class="btn btn-sm btn-warning" 
                                                        href="<?= BASE_URL ?>/admin.php?action=editLocation&id=<?= $loc['location_id'] ?>">
