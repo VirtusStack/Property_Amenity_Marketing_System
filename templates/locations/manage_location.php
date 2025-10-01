@@ -157,7 +157,6 @@ $offset      = ($currentPage - 1) * $perPage;
                                 </li>
                             </ul>
                         </nav>
-
                     </div>
                 </div>
                 <!-- End of Locations Table Card -->
