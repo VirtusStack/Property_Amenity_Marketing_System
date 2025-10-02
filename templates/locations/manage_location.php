@@ -120,6 +120,7 @@ $offset      = ($currentPage - 1) * $perPage;
                                     <?php endif; ?>
                                 </tbody>
                             </table>
+
                         </div>
 
                         <!-- Pagination controls -->
@@ -156,7 +157,7 @@ $offset      = ($currentPage - 1) * $perPage;
                                     </form>
                                 </li>
                             </ul>
-                        </nav>
+                        </nav> 
                     </div>
                 </div>
                 <!-- End of Locations Table Card -->
