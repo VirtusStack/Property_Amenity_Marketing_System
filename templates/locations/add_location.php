@@ -2,7 +2,6 @@
 // /templates/locations/add_location.php
 // -------------------------
 // View file: Displays Add Location form
-// -------------------------
 
 require_once __DIR__ . '/../../config/config.php';
 ?>
@@ -110,9 +109,10 @@ require_once __DIR__ . '/../../config/config.php';
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="submit" class="btn btn-primary">Add Location</button>
-                        </form>
-                    </div>
+                           <button type="submit" class="btn btn-primary">Add Location</button>
+		     </form>
+                   
+		  </div>
                 </div>
 
             </div>
