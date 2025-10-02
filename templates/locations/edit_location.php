@@ -116,9 +116,9 @@ require_once __DIR__ . '/../../config/config.php';
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary">Update Location</button>
                             <a href="<?= BASE_URL ?>/admin.php?action=manageLocations" class="btn btn-secondary">Cancel</a>
-
                         </form>
-                    </div>
+                  
+		  </div>
                 </div>
 
             </div>
