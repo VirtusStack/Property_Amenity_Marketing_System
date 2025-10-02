@@ -57,7 +57,6 @@ INSERT INTO `companies` (`company_id`, `company_name`, `created_at`, `descriptio
 --
 -- Table structure for table `locations`
 --
-
 CREATE TABLE `locations` (
   `location_id` int(11) NOT NULL,
   `location_name` varchar(150) NOT NULL,
@@ -73,9 +72,7 @@ CREATE TABLE `locations` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `locations`
---
+
 
 INSERT INTO `locations` (`location_id`, `location_name`, `place`, `country`, `state`, `city`, `company_id`, `contact_number`, `manager`, `created_by`, `is_deleted`, `created_at`) VALUES
 (1, 'Head Office', 'Downtown', 'India', 'Maharashtra', 'Mumbai', 1, '9876543214', 'Alice Johnson', 1, 0, '2023-01-14 23:30:00'),
