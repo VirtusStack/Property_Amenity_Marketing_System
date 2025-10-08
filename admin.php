@@ -10,6 +10,7 @@ require_once __DIR__ . "/classes/User.php";
 require_once __DIR__ . "/classes/Role.php";
 require_once __DIR__ . "/classes/Company.php";
 require_once __DIR__ . "/classes/Location.php";
+require_once __DIR__ . "/classes/Room.php";
 
 session_start(); // Start PHP session
  
@@ -94,6 +95,10 @@ case 'editLocation':
     editLocation();
     break;
 
+// Room management
+case 'newRoom':
+    newRoom();
+    break;
 
 // Role management
     case 'newRole':
@@ -501,6 +506,82 @@ function editLocation() {
     require(TEMPLATE_PATH . "/locations/edit_location.php");
 }
 
+// -------------------------
+// ROOM MANAGEMENT
+// -------------------------
+function newRoom() {
+    global $pdo;
+
+    $results = [
+        'message' => '',
+        'pageTitle' => 'Add New Room',
+        'companies' => Company::getAll($pdo),    
+        'locations' => Location::getAll($pdo),   
+        'facilities' => Room::getAllFacilities($pdo), 
+    ];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        // Collect POST data
+        $data = [
+            'location_id'         => $_POST['location_id'] ?? null,
+            'room_name'           => trim($_POST['room_name'] ?? ''),
+            'room_type'           => trim($_POST['room_type'] ?? ''),
+            'room_view'           => trim($_POST['room_view'] ?? ''),
+            'description'         => trim($_POST['description'] ?? ''),
+            'base_price_per_night'=> floatval($_POST['base_price_per_night'] ?? 0),
+            'gst_percent'         => floatval($_POST['gst_percent'] ?? 0),
+            'total_inventory'     => intval($_POST['total_inventory'] ?? 0),
+            'notes'               => trim($_POST['notes'] ?? ''),
+            'terms_conditions'    => trim($_POST['terms_conditions'] ?? ''),
+            'status'              => $_POST['status'] ?? 'active',
+            'created_by'          => $_SESSION['user_id'] ?? null
+        ];
+
+        // Basic validation
+        if (empty($data['location_id']) || empty($data['room_name']) || $data['base_price_per_night'] <= 0 || $data['total_inventory'] <= 0) {
+            $results['message'] = "Please fill all required fields with valid values!";
+            $results = array_merge($results, $_POST);
+        } else {
+            try {
+                // Begin transaction
+                $pdo->beginTransaction();
+
+                // Insert room using Room class
+                $room_id = Room::register($pdo, $data);
+
+                if (!$room_id) {
+                    throw new Exception("Failed to register room.");
+                }
+
+                // Map selected facilities
+                if (!empty($_POST['facilities'])) {
+                    foreach ($_POST['facilities'] as $facility_id) {
+                        $stmtFacility = $pdo->prepare("INSERT INTO room_facility_map (room_id, facility_id) VALUES (?, ?)");
+                        $stmtFacility->execute([$room_id, $facility_id]);
+                    }
+                }
+
+                // Commit transaction
+                $pdo->commit();
+
+                $results['message'] = "Room added successfully!";
+
+                // Clear form values
+                foreach(['location_id','room_name','room_type','room_view','description','base_price_per_night','gst_percent','total_inventory','notes','terms_conditions','status'] as $f) {
+                    $results[$f] = '';
+                }
+
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                $results['message'] = "Error adding room: " . $e->getMessage();
+                $results = array_merge($results, $_POST);
+            }
+        }
+    }
+
+    require(TEMPLATE_PATH . "/rooms/add_room.php");
+}
 
 // -------------------------
 // ROLE MANAGEMENT
