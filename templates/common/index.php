@@ -47,9 +47,23 @@ $currentUserRole = "Admin";
                             <div class="card-body">
                                 <div class="card-title"><i class="fas fa-users"></i> Users</div>
                                 <div class="card-text">
-                                    <!-- ✅ Controller-based links -->
+                                    <!--  Controller-based links -->
                                     <p><a href="<?= BASE_URL ?>/admin.php?action=manageUsers">Manage Users</a></p>
                                     <p><a href="<?= BASE_URL ?>/admin.php?action=newUser">Add User</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+     		    <!-- Roles Card -->
+                    <div class="col-xl-4 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="card-title"><i class="fas fa-key"></i> Roles</div>
+                                <div class="card-text">
+				     <!--  Controller-based links -->
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageRoles">Manage Roles</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newRole">Add Role</a></p>
                                 </div>
                             </div>
                         </div>
@@ -61,7 +75,7 @@ $currentUserRole = "Admin";
             		   <div class="card-body">
                 	     <div class="card-title"><i class="fas fa-city"></i> Companies</div>
                 	     <div class="card-text">
-                    		<!-- ✅ Controller-based links -->
+                    		<!--  Controller-based links -->
                    	        <p><a href="<?= BASE_URL ?>/admin.php?action=manageCompanies">Manage Companies</a></p>
                     		<p><a href="<?= BASE_URL ?>/admin.php?action=newCompany">Add Company</a></p>
                 	    </div>
@@ -75,36 +89,23 @@ $currentUserRole = "Admin";
             		   <div class="card-body">
                 	     <div class="card-title"><i class="fas fa-map-marker-alt"></i> Locations</div>
                 	     <div class="card-text">
-                    		<!-- ✅ Controller-based links -->
+                    		<!-- Controller-based links -->
                    	       <p><a href="<?= BASE_URL ?>/admin.php?action=manageLocations">Manage Locations</a></p>
                		       <p><a href="<?= BASE_URL ?>/admin.php?action=newLocation">Add Location</a></p>
                 	    </div>
            	        </div>
        	            </div>
                 </div>
-
-                    <!-- Roles Card -->
-                    <div class="col-xl-4 col-md-6 mb-4">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="card-title"><i class="fas fa-key"></i> Roles</div>
-                                <div class="card-text">
-                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageRoles">Manage Roles</a></p>
-                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newRole">Add Role</a></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                    
-                    <!-- Properties Card -->
+                    <!-- Rooms Card -->
                     <div class="col-xl-4 col-md-6 mb-4">
                         <div class="card border-left-info shadow h-100 py-2">
                             <div class="card-body">
-                                <div class="card-title"><i class="fas fa-building"></i> Properties</div>
+                                <div class="card-title"><i class="fas fa-door-open"></i> Rooms</div>
                                 <div class="card-text">
-                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageProperties">Manage Properties</a></p>
-                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newProperty">Add Property</a></p>
+				     <!--  Controller-based links -->
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageRooms">Manage Rooms</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newRoom">Add Room</a></p>
                                 </div>
                             </div>
                         </div>
