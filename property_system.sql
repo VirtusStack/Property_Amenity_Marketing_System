@@ -227,7 +227,7 @@ CREATE TABLE `rooms` (
   `base_price_per_night` decimal(10,2) NOT NULL,
   `gst_percent` decimal(5,2) NOT NULL DEFAULT 0.00,
   `final_price` decimal(10,2) GENERATED ALWAYS AS (`base_price_per_night` + `base_price_per_night` * `gst_percent` / 100) STORED,
-  `status` enum('active','inactive') DEFAULT 'active',
+   `status` enum('active','inactive','maintenance') DEFAULT 'active',
   `notes` text DEFAULT NULL,
   `terms_conditions` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
