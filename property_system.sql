@@ -242,7 +242,8 @@ CREATE TABLE `rooms` (
 INSERT INTO `rooms` (`room_id`, `location_id`, `room_name`, `room_type`, `description`, `room_view`, `total_inventory`, `booked_count`, `base_price_per_night`, `gst_percent`, `status`, `notes`, `terms_conditions`, `created_at`, `updated_at`, `created_by`) VALUES
 (1, 1, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 5, 0, 4500.00, 18.00, 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-9-08 05:54:13', '2025-9-08 05:54:13', 1),
 (3, 1, '102', 'Deluxe', 'Modern deluxe room with city skyline view. Ideal for business travelers.', 'City View', 5, 0, 4200.00, 18.00, 'active', 'Smoking allowed in designated area. Complimentary tea/coffee.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included.', '2025-10-08 06:17:08', '2025-10-08 06:17:08', 1);
-
+(4, 1, '103', 'Standard', 'Cozy standard room overlooking the garden. Great for short stays.', 'Garden View', 4, 0, 3200.00, 18.00, 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:26:54', '2025-10-08 06:26:54', 1),
+(5, 1, '104', 'Suite', 'Luxury suite with living area and sea view. Perfect for families or special occasions.', 'Sea View', 2, 0, 7500.00, 18.00, 'active', 'No smoking. Welcome drink included. Complimentary water bottles.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:29:18', '2025-10-08 06:29:18', 1),
 -- --------------------------------------------------------
 
 --
@@ -271,6 +272,20 @@ INSERT INTO `room_facilities` (`room_id`, `facility_id`) VALUES
 (3, 18),
 (3, 27),
 (3, 29);
+(4, 1),
+(4, 3),
+(4, 16),
+(4, 18),
+(4, 24),
+(4, 27),
+(5, 1),
+(5, 3),
+(5, 16),
+(5, 18),
+(5, 20),
+(5, 24),
+(5, 27),
+(5, 41),
 
 -- --------------------------------------------------------
 
