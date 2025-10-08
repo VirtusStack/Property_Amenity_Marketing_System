@@ -138,6 +138,8 @@ require_once __DIR__ . '/../../config/config.php';
                                 <select name="status" class="form-control">
                                     <option value="active" <?= (isset($results['status']) && $results['status']=='active')?'selected':'' ?>>Active</option>
                                     <option value="inactive" <?= (isset($results['status']) && $results['status']=='inactive')?'selected':'' ?>>Inactive</option>
+				    <option value="maintenance" <?= (isset($results['status']) && $results['status']=='maintenance')?'selected':'' ?>>Maintenance</option>
+
                                 </select>
                             </div>
 
