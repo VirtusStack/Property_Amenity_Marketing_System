@@ -240,7 +240,7 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`room_id`, `location_id`, `room_name`, `room_type`, `description`, `room_view`, `total_inventory`, `booked_count`, `base_price_per_night`, `gst_percent`, `status`, `notes`, `terms_conditions`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 1, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 5, 0, 4500.00, 18.00, 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-10-08 05:54:13', '2025-10-08 05:54:13', 1),
+(1, 1, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 5, 0, 4500.00, 18.00, 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-9-08 05:54:13', '2025-9-08 05:54:13', 1),
 (3, 1, '102', 'Deluxe', 'Modern deluxe room with city skyline view. Ideal for business travelers.', 'City View', 5, 0, 4200.00, 18.00, 'active', 'Smoking allowed in designated area. Complimentary tea/coffee.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included.', '2025-10-08 06:17:08', '2025-10-08 06:17:08', 1);
 
 -- --------------------------------------------------------
