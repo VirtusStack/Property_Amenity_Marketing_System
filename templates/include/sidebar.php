@@ -84,19 +84,20 @@
     </div>
   </li>
 
-  <!-- Properties Menu -->
-  <li class="nav-item">
-    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProperties" aria-expanded="true" aria-controls="collapseProperties">
-      <i class="fas fa-home"></i>
-      <span>Properties</span>
-    </a>
-    <div id="collapseProperties" class="collapse" aria-labelledby="headingProperties" data-parent="#accordionSidebar">
-      <div class="bg-white py-2 collapse-inner rounded">
-        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageProperties">Manage Properties</a>
-        <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newProperty">Add Property</a>
-      </div>
+  <!-- Rooms Menu -->
+<li class="nav-item">
+  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRooms" aria-expanded="true" aria-controls="collapseRooms">
+    <i class="fas fa-door-open"></i>
+    <span>Rooms</span>
+  </a>
+  <div id="collapseRooms" class="collapse" aria-labelledby="headingRooms" data-parent="#accordionSidebar">
+    <div class="bg-white py-2 collapse-inner rounded">
+      <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageRooms">Manage Rooms</a>
+      <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newRoom">Add Room</a>
     </div>
-  </li>
+  </div>
+</li>
+
 
   <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">
