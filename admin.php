@@ -524,18 +524,18 @@ function newRoom() {
 
         // Collect POST data
         $data = [
-            'location_id'         => $_POST['location_id'] ?? null,
-            'room_name'           => trim($_POST['room_name'] ?? ''),
-            'room_type'           => trim($_POST['room_type'] ?? ''),
-            'room_view'           => trim($_POST['room_view'] ?? ''),
-            'description'         => trim($_POST['description'] ?? ''),
+            'location_id'        => $_POST['location_id'] ?? null,
+            'room_name'          => trim($_POST['room_name'] ?? ''),
+            'room_type'          => trim($_POST['room_type'] ?? ''),
+            'room_view'          => trim($_POST['room_view'] ?? ''),
+            'description'        => trim($_POST['description'] ?? ''),
             'base_price_per_night'=> floatval($_POST['base_price_per_night'] ?? 0),
-            'gst_percent'         => floatval($_POST['gst_percent'] ?? 0),
-            'total_inventory'     => intval($_POST['total_inventory'] ?? 0),
-            'notes'               => trim($_POST['notes'] ?? ''),
-            'terms_conditions'    => trim($_POST['terms_conditions'] ?? ''),
-            'status'              => $_POST['status'] ?? 'active',
-            'created_by'          => $_SESSION['user_id'] ?? null
+            'gst_percent'        => floatval($_POST['gst_percent'] ?? 0),
+            'total_inventory'    => intval($_POST['total_inventory'] ?? 0),
+            'notes'              => trim($_POST['notes'] ?? ''),
+            'terms_conditions'   => trim($_POST['terms_conditions'] ?? ''),
+            'status'             => $_POST['status'] ?? 'active',
+            'created_by'         => $_SESSION['user_id'] ?? null
         ];
 
         // Basic validation
@@ -547,18 +547,22 @@ function newRoom() {
                 // Begin transaction
                 $pdo->beginTransaction();
 
-                // Insert room using Room class
-                $room_id = Room::register($pdo, $data);
+                // Insert room
+                $stmt = $pdo->prepare("INSERT INTO rooms 
+                    (location_id, room_name, room_type, room_view, description, base_price_per_night, gst_percent, total_inventory, notes, terms_conditions, status, created_by) 
+                    VALUES 
+                    (:location_id, :room_name, :room_type, :room_view, :description, :base_price_per_night, :gst_percent, :total_inventory, :notes, :terms_conditions, :status, :created_by)");
+                $stmt->execute($data);
+                $room_id = $pdo->lastInsertId();
 
-                if (!$room_id) {
-                    throw new Exception("Failed to register room.");
-                }
-
-                // Map selected facilities
+                // Map selected facilities to room_facilities table
                 if (!empty($_POST['facilities'])) {
+                    $stmtFacility = $pdo->prepare("INSERT INTO room_facilities (room_id, facility_id) VALUES (:room_id, :facility_id)");
                     foreach ($_POST['facilities'] as $facility_id) {
-                        $stmtFacility = $pdo->prepare("INSERT INTO room_facility_map (room_id, facility_id) VALUES (?, ?)");
-                        $stmtFacility->execute([$room_id, $facility_id]);
+                        $stmtFacility->execute([
+                            ':room_id' => $room_id,
+                            ':facility_id' => $facility_id
+                        ]);
                     }
                 }
 
@@ -572,7 +576,7 @@ function newRoom() {
                     $results[$f] = '';
                 }
 
-            } catch (Exception $e) {
+            } catch (PDOException $e) {
                 $pdo->rollBack();
                 $results['message'] = "Error adding room: " . $e->getMessage();
                 $results = array_merge($results, $_POST);
