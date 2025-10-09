@@ -100,6 +100,15 @@ case 'newRoom':
     newRoom();
     break;
 
+case 'manageRooms':
+    manageRooms();
+    break;
+
+case 'editRoom':
+    editRoom();
+    break;
+
+
 // Role management
     case 'newRole':
     newRole(); 
@@ -509,33 +518,34 @@ function editLocation() {
 // -------------------------
 // ROOM MANAGEMENT
 // -------------------------
+
+// ADD NEW ROOM
 function newRoom() {
     global $pdo;
 
     $results = [
         'message' => '',
         'pageTitle' => 'Add New Room',
-        'companies' => Company::getAll($pdo),    
-        'locations' => Location::getAll($pdo),   
-        'facilities' => Room::getAllFacilities($pdo), 
+        'locations' => Location::getAll($pdo),    // Locations include company info
+        'facilities' => Room::getAllFacilities($pdo)
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
         // Collect POST data
         $data = [
-            'location_id'        => $_POST['location_id'] ?? null,
-            'room_name'          => trim($_POST['room_name'] ?? ''),
-            'room_type'          => trim($_POST['room_type'] ?? ''),
-            'room_view'          => trim($_POST['room_view'] ?? ''),
-            'description'        => trim($_POST['description'] ?? ''),
+            'location_id'         => $_POST['location_id'] ?? null,
+            'room_name'           => trim($_POST['room_name'] ?? ''),
+            'room_type'           => trim($_POST['room_type'] ?? ''),
+            'room_view'           => trim($_POST['room_view'] ?? ''),
+            'description'         => trim($_POST['description'] ?? ''),
             'base_price_per_night'=> floatval($_POST['base_price_per_night'] ?? 0),
-            'gst_percent'        => floatval($_POST['gst_percent'] ?? 0),
-            'total_inventory'    => intval($_POST['total_inventory'] ?? 0),
-            'notes'              => trim($_POST['notes'] ?? ''),
-            'terms_conditions'   => trim($_POST['terms_conditions'] ?? ''),
-            'status'             => $_POST['status'] ?? 'active',
-            'created_by'         => $_SESSION['user_id'] ?? null
+            'gst_percent'         => floatval($_POST['gst_percent'] ?? 0),
+            'total_inventory'     => intval($_POST['total_inventory'] ?? 0),
+            'notes'               => trim($_POST['notes'] ?? ''),
+            'terms_conditions'    => trim($_POST['terms_conditions'] ?? ''),
+            'status'              => $_POST['status'] ?? 'active',
+            'created_by'          => $_SESSION['user_id'] ?? null,
+            'max_occupancy'       => intval($_POST['max_occupancy'] ?? 1)
         ];
 
         // Basic validation
@@ -544,18 +554,19 @@ function newRoom() {
             $results = array_merge($results, $_POST);
         } else {
             try {
-                // Begin transaction
                 $pdo->beginTransaction();
 
                 // Insert room
-                $stmt = $pdo->prepare("INSERT INTO rooms 
-                    (location_id, room_name, room_type, room_view, description, base_price_per_night, gst_percent, total_inventory, notes, terms_conditions, status, created_by) 
+                $stmt = $pdo->prepare("
+                    INSERT INTO rooms 
+                    (location_id, room_name, room_type, room_view, description, base_price_per_night, gst_percent, total_inventory, notes, terms_conditions, status, created_by, max_occupancy) 
                     VALUES 
-                    (:location_id, :room_name, :room_type, :room_view, :description, :base_price_per_night, :gst_percent, :total_inventory, :notes, :terms_conditions, :status, :created_by)");
+                    (:location_id, :room_name, :room_type, :room_view, :description, :base_price_per_night, :gst_percent, :total_inventory, :notes, :terms_conditions, :status, :created_by, :max_occupancy)
+                ");
                 $stmt->execute($data);
                 $room_id = $pdo->lastInsertId();
 
-                // Map selected facilities to room_facilities table
+                // Map facilities
                 if (!empty($_POST['facilities'])) {
                     $stmtFacility = $pdo->prepare("INSERT INTO room_facilities (room_id, facility_id) VALUES (:room_id, :facility_id)");
                     foreach ($_POST['facilities'] as $facility_id) {
@@ -566,13 +577,9 @@ function newRoom() {
                     }
                 }
 
-                // Commit transaction
                 $pdo->commit();
-
                 $results['message'] = "Room added successfully!";
-
-                // Clear form values
-                foreach(['location_id','room_name','room_type','room_view','description','base_price_per_night','gst_percent','total_inventory','notes','terms_conditions','status'] as $f) {
+                foreach(['location_id','room_name','room_type','room_view','description','base_price_per_night','gst_percent','total_inventory','notes','terms_conditions','status','max_occupancy'] as $f) {
                     $results[$f] = '';
                 }
 
@@ -585,6 +592,160 @@ function newRoom() {
     }
 
     require(TEMPLATE_PATH . "/rooms/add_room.php");
+}
+
+// MANAGE ROOMS
+function manageRooms() {
+    global $pdo;
+
+    $results = [
+        'message'   => '',
+        'pageTitle' => 'Manage Rooms',
+        'rooms'     => []
+    ];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+        $roomId = (int)$_POST['delete'];
+        if (Room::delete($pdo, $roomId)) {
+            $results['message'] = "Room deleted successfully!";
+        } else {
+            $results['message'] = "Error deleting room!";
+        }
+    }
+
+    // Pagination
+    $perPage = 25;
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    $offset = ($page - 1) * $perPage;
+
+    // Fetch rooms with location & company info
+    $stmt = $pdo->prepare("
+        SELECT r.*, l.location_name, c.company_name
+        FROM rooms r
+        LEFT JOIN locations l ON r.location_id = l.location_id
+        LEFT JOIN companies c ON l.company_id = c.company_id
+        ORDER BY r.room_id ASC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    $rooms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($rooms as &$room) {
+        $gst = $room['gst_percent'] ?? 0;
+        $room['final_price'] = $room['base_price_per_night'] * (1 + $gst / 100);
+    }
+    unset($room);
+
+    $results['rooms']       = $rooms;
+    $results['currentPage'] = $page;
+    $results['totalPages']  = ceil((int)$pdo->query("SELECT COUNT(*) FROM rooms")->fetchColumn() / $perPage);
+    $results['total']       = (int)$pdo->query("SELECT COUNT(*) FROM rooms")->fetchColumn();
+    $results['perPage']     = $perPage;
+
+    require(TEMPLATE_PATH . "/rooms/manage_room.php");
+}
+
+// EDIT ROOM
+function editRoom() {
+    global $pdo;
+
+    $results = [
+        'message' => '',
+        'pageTitle' => 'Edit Room',
+        'locations' => Location::getAll($pdo),   // Locations include company info
+        'facilities' => Room::getAllFacilities($pdo)
+    ];
+
+    if (!isset($_GET['id'])) die("No room ID given.");
+    $roomId = (int)$_GET['id'];
+
+    // Load room data
+    $roomStmt = $pdo->prepare("SELECT * FROM rooms WHERE room_id = :room_id");
+    $roomStmt->execute([':room_id' => $roomId]);
+    $room = $roomStmt->fetch(PDO::FETCH_ASSOC);
+    if (!$room) die("Room not found.");
+
+    $results['room'] = $room;
+
+    // Load selected facilities
+    $facStmt = $pdo->prepare("SELECT facility_id FROM room_facilities WHERE room_id = :room_id");
+    $facStmt->execute([':room_id' => $roomId]);
+    $results['room']['facilities'] = $facStmt->fetchAll(PDO::FETCH_COLUMN);
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = [
+            'location_id'         => $_POST['location_id'] ?? null,
+            'room_name'           => trim($_POST['room_name'] ?? ''),
+            'room_type'           => trim($_POST['room_type'] ?? ''),
+            'room_view'           => trim($_POST['room_view'] ?? ''),
+            'description'         => trim($_POST['description'] ?? ''),
+            'base_price_per_night'=> floatval($_POST['base_price_per_night'] ?? 0),
+            'gst_percent'         => floatval($_POST['gst_percent'] ?? 0),
+            'total_inventory'     => intval($_POST['total_inventory'] ?? 0),
+            'notes'               => trim($_POST['notes'] ?? ''),
+            'terms_conditions'    => trim($_POST['terms_conditions'] ?? ''),
+            'status'              => $_POST['status'] ?? 'active',
+            'max_occupancy'       => intval($_POST['max_occupancy'] ?? 1)
+        ];
+
+        if (empty($data['location_id']) || empty($data['room_name']) || $data['base_price_per_night'] <= 0 || $data['total_inventory'] <= 0) {
+            $results['message'] = "Please fill all required fields with valid values!";
+            $results['room'] = array_merge($results['room'], $_POST);
+        } else {
+            try {
+                $pdo->beginTransaction();
+
+                // Update room
+                $stmt = $pdo->prepare("
+                    UPDATE rooms SET
+                        location_id = :location_id,
+                        room_name = :room_name,
+                        room_type = :room_type,
+                        room_view = :room_view,
+                        description = :description,
+                        base_price_per_night = :base_price_per_night,
+                        gst_percent = :gst_percent,
+                        total_inventory = :total_inventory,
+                        notes = :notes,
+                        terms_conditions = :terms_conditions,
+                        status = :status,
+                        max_occupancy = :max_occupancy
+                    WHERE room_id = :room_id
+                ");
+                $stmt->execute(array_merge($data, [':room_id' => $roomId]));
+
+                // Update facilities
+                $pdo->prepare("DELETE FROM room_facilities WHERE room_id = :room_id")->execute([':room_id' => $roomId]);
+                if (!empty($_POST['facilities'])) {
+                    $stmtFacility = $pdo->prepare("INSERT INTO room_facilities (room_id, facility_id) VALUES (:room_id, :facility_id)");
+                    foreach ($_POST['facilities'] as $facility_id) {
+                        $stmtFacility->execute([
+                            ':room_id' => $roomId,
+                            ':facility_id' => $facility_id
+                        ]);
+                    }
+                }
+
+                $pdo->commit();
+                $results['message'] = "Room updated successfully!";
+
+                // Refresh room data
+                $roomStmt->execute([':room_id' => $roomId]);
+                $results['room'] = $roomStmt->fetch(PDO::FETCH_ASSOC);
+                $facStmt->execute([':room_id' => $roomId]);
+                $results['room']['facilities'] = $facStmt->fetchAll(PDO::FETCH_COLUMN);
+
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                $results['message'] = "Error updating room: " . $e->getMessage();
+                $results['room'] = array_merge($results['room'], $_POST);
+            }
+        }
+    }
+
+    require(TEMPLATE_PATH . "/rooms/edit_room.php");
 }
 
 // -------------------------
