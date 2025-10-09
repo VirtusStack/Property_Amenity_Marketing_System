@@ -9,7 +9,7 @@ class Room {
         try {
             $stmt = $pdo->prepare("
                 INSERT INTO rooms (
-                    location_id, room_name, room_type, description, room_view,
+                    location_id, room_name, room_type, description, room_view,max_occupancy,
                     total_inventory, base_price_per_night, gst_percent, notes, terms_conditions, status, created_by
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
@@ -19,6 +19,7 @@ class Room {
                 $data['room_type'] ?? '',
                 $data['description'] ?? '',
                 $data['room_view'] ?? '',
+		 $data['max_occupancy'] ?? 1,      // default 1
                 $data['total_inventory'] ?? 0,
                 $data['base_price_per_night'] ?? 0.00,
                 $data['gst_percent'] ?? 0.00,
@@ -75,7 +76,7 @@ class Room {
         try {
             $stmt = $pdo->prepare("
                 UPDATE rooms 
-                SET location_id=?, room_name=?, room_type=?, description=?, room_view=?,
+                SET location_id=?, room_name=?, room_type=?, description=?, room_view=?,max_occupancy=?,
                     total_inventory=?, base_price_per_night=?, gst_percent=?, 
                     notes=?, terms_conditions=?, status=?, updated_at=NOW()
                 WHERE room_id=?
@@ -86,6 +87,7 @@ class Room {
                 $data['room_type'] ?? '',
                 $data['description'] ?? '',
                 $data['room_view'] ?? '',
+		$data['max_occupancy'] ?? 1,      //default 1
                 $data['total_inventory'] ?? 0,
                 $data['base_price_per_night'] ?? 0.00,
                 $data['gst_percent'] ?? 0.00,
