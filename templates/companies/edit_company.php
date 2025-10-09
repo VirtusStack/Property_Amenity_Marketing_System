@@ -86,7 +86,8 @@ require_once __DIR__ . '/../../config/config.php';
 
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary">Update Company</button>
-                         </form>
+                            <a href="<?= BASE_URL ?>/admin.php?action=manageCompanies" class="btn btn-secondary">Cancel</a>
+              		</form>
                     </div>
                 </div>
 
