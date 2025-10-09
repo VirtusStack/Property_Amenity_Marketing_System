@@ -71,6 +71,8 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
                                         <th>Base Price</th>
                                         <th>GST %</th>
                                         <th>Final Price</th>
+					<th>Notes</th>
+					<th>Terms & Conditions</th>
                                         <th>Facilities</th>
                                         <th>Status</th>
                                         <th>Actions</th>
@@ -91,6 +93,8 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
                                             <td><?= htmlspecialchars($room['base_price_per_night'] ?? '-') ?></td>
                                             <td><?= htmlspecialchars($room['gst_percent'] ?? '-') ?></td>
                                             <td><?= htmlspecialchars($room['final_price'] ?? '-') ?></td>
+					    <td><?= htmlspecialchars($room['notes'] ?? '-') ?></td>
+					    <td><?= htmlspecialchars($room['terms_conditions'] ?? '-') ?></td>
                                             <td>
                                                 <?php
                                                     // Fetch facilities for this room
