@@ -126,43 +126,44 @@ $offset      = ($currentPage - 1) * $perPage;
                             </table>
                         </div>
 
-                         <!-- Pagination controls -->
+			<!-- Pagination -->
 			<?php if ($totalPages > 1): ?>
-    			<nav aria-label="Company pagination">
+  			  <nav aria-label="Company pagination">
         		<ul class="pagination justify-content-center align-items-center">
 
-           		 <!-- Previous button -->
+            		<!-- Previous button -->
             		<li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-                	<a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= max(1, $currentPage - 1) ?>">Previous</a>
-           	     </li>
+               		 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= max(1, $currentPage - 1) ?>">Previous</a>
+            		</li>
 
-            		<!-- Numbered page buttons -->
+           		 <!-- Numbered page buttons -->
             		<?php for ($i = 1; $i <= $totalPages; $i++): ?>
                 	<li class="page-item <?= ($i === $currentPage) ? 'active' : '' ?>">
-                    	<a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= $i ?>"><?= $i ?></a>
+                   	 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= $i ?>"><?= $i ?></a>
                 	</li>
             		<?php endfor; ?>
 
             		<!-- Next button -->
             		<li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-                	<a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= min($totalPages, $currentPage + 1) ?>">Next</a>
+               		 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= min($totalPages, $currentPage + 1) ?>">Next</a>
             		</li>
 
-            		<!-- Dropdown + Go AFTER Next -->
+           		 <!-- Dropdown + Go AFTER Next -->
             		<li class="page-item ms-2">
-                	<form method="get" action="<?= BASE_URL ?>/admin.php" class="d-flex" style="gap:6px;">
-                    <input type="hidden" name="action" value="manageCompanies">
-                    <select name="page" class="form-select form-select-sm">
+                	<form method="get" action="<?= BASE_URL ?>/admin.php" class="d-flex">
+                    	<input type="hidden" name="action" value="manageCompanies">
+                    	<select name="page" class="form-select form-select-sm me-1">
                         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                             <option value="<?= $i ?>" <?= ($i === $currentPage) ? 'selected' : '' ?>>Page <?= $i ?></option>
                         <?php endfor; ?>
-                    	</select>
-                   	 <button type="submit" class="btn btn-sm btn-primary">Go</button>
-               		 </form>
-            	      </li>
-        	   </ul>
-    		</nav>
+                       </select>
+                       <button type="submit" class="btn btn-sm btn-primary">Go</button>
+                      </form>
+                   </li>
+		</ul>
+    	    </nav>
 	<?php endif; ?>
+
                     </div>
                 </div>
                 <!-- End of Companies Table Card -->
