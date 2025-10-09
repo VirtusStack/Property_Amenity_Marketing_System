@@ -68,6 +68,7 @@ require_once __DIR__ . '/../../config/config.php';
                             <div class="form-group mb-3">
                                 <label>Max Occupancy:</label>
                                 <input type="number" name="max_occupancy" class="form-control" min="1" value="<?= htmlspecialchars($results['max_occupancy'] ?? 1) ?>">
+				<small class="form-text text-muted">How many people can stay in this room comfortably.</small>
                             </div>
 
                             <!-- Description -->
@@ -81,6 +82,7 @@ require_once __DIR__ . '/../../config/config.php';
                                 <label>Base Price per Night:</label>
                                 <input type="number" step="0.01" name="base_price_per_night" class="form-control" required value="<?= htmlspecialchars($results['base_price_per_night'] ?? '') ?>">
                             </div>
+
                             <div class="form-group mb-3">
                                 <label>GST %:</label>
                                 <select name="gst_percent" class="form-control">
@@ -92,8 +94,9 @@ require_once __DIR__ . '/../../config/config.php';
 
                             <!-- Total Inventory -->
                             <div class="form-group mb-3">
-                                <label>Total Inventory:</label>
-                                <input type="number" name="total_inventory" class="form-control" required value="<?= htmlspecialchars($results['total_inventory'] ?? 1) ?>">
+                            <label>Total Inventory:</label>
+                           <input type="number" name="total_inventory" class="form-control" required value="<?= htmlspecialchars($results['total_inventory'] ?? 1) ?>">
+			   <small class="form-text text-muted">How many rooms of this type are available.</small>
                             </div>
 
                             <!-- Notes & Terms -->
