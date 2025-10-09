@@ -1,7 +1,4 @@
-- -- Database: `property_system`
---
-
--- --------------------------------------------------------
+-- Database: `property_system`
 
 --
 -- Table structure for table `companies`
@@ -221,13 +218,14 @@ CREATE TABLE `rooms` (
   `room_type` varchar(100) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `room_view` varchar(100) DEFAULT NULL,
+  `max_occupancy` int(11) NOT NULL DEFAULT 1,
   `total_inventory` int(11) NOT NULL DEFAULT 1,
   `booked_count` int(11) NOT NULL DEFAULT 0,
   `available_count` int(11) GENERATED ALWAYS AS (`total_inventory` - `booked_count`) STORED,
   `base_price_per_night` decimal(10,2) NOT NULL,
   `gst_percent` decimal(5,2) NOT NULL DEFAULT 0.00,
   `final_price` decimal(10,2) GENERATED ALWAYS AS (`base_price_per_night` + `base_price_per_night` * `gst_percent` / 100) STORED,
-   `status` enum('active','inactive','maintenance') DEFAULT 'active',
+  `status` enum('active','inactive','maintenance') DEFAULT 'active',
   `notes` text DEFAULT NULL,
   `terms_conditions` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -239,11 +237,14 @@ CREATE TABLE `rooms` (
 -- Dumping data for table `rooms`
 --
 
-INSERT INTO `rooms` (`room_id`, `location_id`, `room_name`, `room_type`, `description`, `room_view`, `total_inventory`, `booked_count`, `base_price_per_night`, `gst_percent`, `status`, `notes`, `terms_conditions`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 1, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 5, 0, 4500.00, 18.00, 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-9-08 05:54:13', '2025-9-08 05:54:13', 1),
-(3, 1, '102', 'Deluxe', 'Modern deluxe room with city skyline view. Ideal for business travelers.', 'City View', 5, 0, 4200.00, 18.00, 'active', 'Smoking allowed in designated area. Complimentary tea/coffee.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included.', '2025-10-08 06:17:08', '2025-10-08 06:17:08', 1);
-(4, 1, '103', 'Standard', 'Cozy standard room overlooking the garden. Great for short stays.', 'Garden View', 4, 0, 3200.00, 18.00, 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:26:54', '2025-10-08 06:26:54', 1),
-(5, 1, '104', 'Suite', 'Luxury suite with living area and sea view. Perfect for families or special occasions.', 'Sea View', 2, 0, 7500.00, 18.00, 'active', 'No smoking. Welcome drink included. Complimentary water bottles.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:29:18', '2025-10-08 06:29:18', 1),
+INSERT INTO `rooms` (`room_id`, `location_id`, `room_name`, `room_type`, `description`, `room_view`, `max_occupancy`, `total_inventory`, `booked_count`, `base_price_per_night`, `gst_percent`, `status`, `notes`, `terms_conditions`, `created_at`, `updated_at`, `created_by`) VALUES
+(1, 1, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 1, 4, 0, 4500.00, 18.00, 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-10-07 05:54:13', '2025-10-09 04:45:00', 1),
+(3, 1, '102', 'Deluxe', 'Modern deluxe room with city skyline view. Ideal for business travelers.', 'City View', 1, 5, 0, 4200.00, 18.00, 'active', 'Smoking allowed in designated area. Complimentary tea/coffee.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included.', '2025-10-08 06:17:08', '2025-10-08 06:17:08', 1),
+(4, 1, '103', 'Standard', 'Cozy standard room overlooking the garden. Great for short stays.', 'Garden View', 1, 4, 0, 3200.00, 18.00, 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:26:54', '2025-10-08 06:26:54', 1),
+(5, 1, '104', 'Suite', 'Luxury suite with living area and sea view. Perfect for families or special occasions.', 'Sea View', 1, 2, 0, 7500.00, 18.00, 'active', 'No smoking. Welcome drink included. Complimentary water bottles.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:29:18', '2025-10-08 06:29:18', 1),
+(6, 1, '105', 'Suite', '', 'Sea View', 4, 2, 0, 7500.00, 18.00, 'active', '', '', '2025-10-08 07:31:08', '2025-10-08 14:03:22', 1),
+(7, 1, '106', 'Suite', '', 'Sea View', 1, 2, 0, 3500.00, 18.00, 'active', '', '', '2025-10-08 07:51:23', '2025-10-09 05:20:57', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -264,14 +265,14 @@ INSERT INTO `room_facilities` (`room_id`, `facility_id`) VALUES
 (1, 2),
 (1, 3),
 (1, 16),
-(1, 22),
 (1, 27),
+(1, 56),
 (3, 1),
 (3, 3),
 (3, 16),
 (3, 18),
 (3, 27),
-(3, 29);
+(3, 29),
 (4, 1),
 (4, 3),
 (4, 16),
@@ -286,6 +287,18 @@ INSERT INTO `room_facilities` (`room_id`, `facility_id`) VALUES
 (5, 24),
 (5, 27),
 (5, 41),
+(6, 1),
+(6, 6),
+(6, 14),
+(6, 16),
+(6, 20),
+(6, 24),
+(6, 28),
+(6, 41),
+(7, 3),
+(7, 8),
+(7, 16),
+(7, 29);
 
 -- --------------------------------------------------------
 
@@ -397,7 +410,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -442,3 +455,5 @@ ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `users_ibfk_3` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 COMMIT;
+
+--
