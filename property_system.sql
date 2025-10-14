@@ -4,6 +4,9 @@
 -- Table structure for table `companies`
 --
 
+-- Table structure for table `companies`
+--
+
 CREATE TABLE `companies` (
   `company_id` int(11) NOT NULL,
   `company_name` varchar(150) NOT NULL,
@@ -49,7 +52,9 @@ INSERT INTO `companies` (`company_id`, `company_name`, `created_at`, `descriptio
 (27, 'Summit Tech Labs', '2022-05-10 20:00:00', 'Technology research lab', 'contact@summittechlabs.com', '9876543236', 'www.summittechlabs.com', 0),
 (28, 'UrbanLeaf Organics', '2021-09-27 16:45:00', 'Organic food products', 'info@urbanleaf.com', '9876543237', 'www.urbanleaf.com', 0),
 (29, 'Vortex Security', '2023-06-20 23:10:00', 'Cybersecurity solutions', 'hello@vortexsecurity.com', '9876543238', 'www.vortexsecurity.com', 0),
-(30, 'Atlas Logistics', '2022-10-02 19:25:00', 'Transport & logistics services', 'contact@atlaslogistics.com', '9876543239', 'www.atlaslogistics.com', 0);
+(30, 'Atlas Logistics', '2022-10-02 19:25:00', 'Transport & logistics services', 'contact@atlaslogistics.com', '9876543239', 'www.atlaslogistics.com', 0),
+(31, 'Sunrise Hospitality', '2025-10-13 10:59:11', 'Hotel & Resorts Management', 'contact@sunrise.com', '9876500010', 'www.sunrise.com', 0),
+(32, 'Moonlight Resorts', '2025-10-13 10:59:11', 'Luxury resorts & spa services', 'info@moonlight.com', '9876500020', 'www.moonlight.com', 0);
 
 -- --------------------------------------------------------
 
@@ -176,7 +181,43 @@ INSERT INTO `locations` (`location_id`, `location_name`, `place`, `country`, `st
 (18, 'Branch', 'Andheri West', 'India', 'Maharashtra', 'Mumbai', 12, '9876543227', 'Frank Black', 1, 0, '2021-05-19 17:15:00'),
 (19, 'Corporate Office', 'Sector 7', 'India', 'Karnataka', 'Bangalore', 13, '9876543228', 'Grace Hill', 3, 0, '2022-10-10 19:45:00'),
 (20, 'R&D Center', 'Electronic City', 'India', 'Karnataka', 'Bangalore', 14, '9876543229', 'Hank Adams', 3, 0, '2023-01-24 22:50:00'),
-(21, 'Branch', 'MG Road', 'India', 'Karnataka', 'Bangalore', 30, '9876543214', 'Anita Sharma', 1, 0, '2025-10-01 00:50:09');
+(21, 'Branch', 'MG Road', 'India', 'Karnataka', 'Bangalore', 30, '9876543214', 'Anita Sharma', 1, 0, '2025-10-01 00:50:09'),
+(22, 'Head Office', 'MG Road', 'India', 'Maharashtra', 'Mumbai', 29, '9876543214', 'Anita Sharma', 1, 0, '2025-10-10 05:53:43'),
+(25, 'Sunrise Beach', 'Goa Beach', 'India', 'Goa', 'Goa', 31, '9876500011', 'John Sunrise', NULL, 0, '2025-10-13 10:59:41'),
+(26, 'Moonlight Hills', 'Himalayan Range', 'India', 'Himachal Pradesh', 'Shimla', 32, '9876500021', 'Alice Moon', NULL, 0, '2025-10-13 10:59:41');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `restaurants`
+--
+
+CREATE TABLE `restaurants` (
+  `restaurant_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `restaurant_name` varchar(255) NOT NULL,
+  `menu_date` date NOT NULL,
+  `meal_type` enum('lunch','dinner','buffet') NOT NULL,
+  `menu_name` varchar(255) NOT NULL,
+  `no_of_dishes` int(11) DEFAULT 10,
+  `base_price` decimal(10,2) NOT NULL,
+  `description` text DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_deleted` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `restaurants`
+--
+
+INSERT INTO `restaurants` (`restaurant_id`, `location_id`, `restaurant_name`, `menu_date`, `meal_type`, `menu_name`, `no_of_dishes`, `base_price`, `description`, `status`, `created_at`, `updated_at`, `is_deleted`) VALUES
+(1, 21, 'Sunrise Garden', '2025-10-11', 'lunch', 'Beachside Grill', 10, 599.00, 'Seafood and grills by the beach.', 'active', '2025-10-13 16:31:13', '2025-10-14 10:19:49', 0),
+(2, 21, 'Ocean View Dine', '2025-10-11', 'dinner', 'Sunset Buffet', 12, 799.00, 'Buffet with local and international cuisine.', 'active', '2025-10-13 16:31:13', '2025-10-14 10:20:06', 0),
+(3, 22, 'Sunrise Garden', '2025-10-12', 'lunch', 'Mountain Feast', 8, 699.00, 'Traditional Himalayan dishes.', 'active', '2025-10-13 16:31:13', '2025-10-14 10:20:20', 0),
+(4, 26, 'Ocean View Dine', '2025-10-12', 'dinner', 'Hillside Buffet', 15, 999.00, 'Luxury dinner buffet with desserts.', 'inactive', '2025-10-13 16:31:13', '2025-10-13 19:24:39', 0),
+(5, 1, 'Ocean View Dine', '2025-10-13', 'lunch', 'Veg Delight Buffe', 7, 600.00, 'Luxury dinner buffet with desserts.', 'active', '2025-10-13 18:22:55', '2025-10-13 19:26:12', 0);
 
 -- --------------------------------------------------------
 
@@ -238,12 +279,13 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`room_id`, `location_id`, `room_name`, `room_type`, `description`, `room_view`, `max_occupancy`, `total_inventory`, `booked_count`, `base_price_per_night`, `gst_percent`, `status`, `notes`, `terms_conditions`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 1, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 1, 4, 0, 4500.00, 18.00, 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-10-07 05:54:13', '2025-10-09 04:45:00', 1),
-(3, 1, '102', 'Deluxe', 'Modern deluxe room with city skyline view. Ideal for business travelers.', 'City View', 1, 5, 0, 4200.00, 18.00, 'active', 'Smoking allowed in designated area. Complimentary tea/coffee.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included.', '2025-10-08 06:17:08', '2025-10-08 06:17:08', 1),
+(1, 26, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 1, 4, 0, 4500.00, 18.00, 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-10-08 05:54:13', '2025-10-11 12:13:55', 1),
+(3, 26, '102', 'Deluxe', 'Modern deluxe room with city skyline view. Ideal for business travelers.', 'City View', 1, 5, 0, 4200.00, 18.00, 'active', 'Smoking allowed in designated area. Complimentary tea/coffee.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included.', '2025-10-08 06:17:08', '2025-10-11 12:14:21', 1),
 (4, 1, '103', 'Standard', 'Cozy standard room overlooking the garden. Great for short stays.', 'Garden View', 1, 4, 0, 3200.00, 18.00, 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:26:54', '2025-10-08 06:26:54', 1),
 (5, 1, '104', 'Suite', 'Luxury suite with living area and sea view. Perfect for families or special occasions.', 'Sea View', 1, 2, 0, 7500.00, 18.00, 'active', 'No smoking. Welcome drink included. Complimentary water bottles.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:29:18', '2025-10-08 06:29:18', 1),
-(6, 1, '105', 'Suite', '', 'Sea View', 4, 2, 0, 7500.00, 18.00, 'active', '', '', '2025-10-08 07:31:08', '2025-10-08 14:03:22', 1),
-(7, 1, '106', 'Suite', '', 'Sea View', 1, 2, 0, 3500.00, 18.00, 'active', '', '', '2025-10-08 07:51:23', '2025-10-09 05:20:57', 1);
+(6, 1, '105', 'Suite', '', 'Sea View', 4, 2, 0, 7500.00, 18.00, 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included', '2025-10-08 07:31:08', '2025-10-14 04:48:19', 1),
+(7, 1, '106', 'Suite', '', 'Sea View', 1, 2, 0, 3500.00, 18.00, 'active', '', '', '2025-10-08 07:51:23', '2025-10-09 05:20:57', 1),
+(8, 21, '107', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers', 'Sea View', 4, 1, 0, 3200.00, 18.00, 'active', 'No smoking. Welcome drink included. Complimentary water bottles', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included', '2025-10-09 06:05:32', '2025-10-09 06:05:32', 1),
 
 -- --------------------------------------------------------
 
@@ -262,17 +304,14 @@ CREATE TABLE `room_facilities` (
 
 INSERT INTO `room_facilities` (`room_id`, `facility_id`) VALUES
 (1, 1),
-(1, 2),
 (1, 3),
+(1, 12),
 (1, 16),
-(1, 27),
-(1, 56),
 (3, 1),
 (3, 3),
+(3, 5),
+(3, 13),
 (3, 16),
-(3, 18),
-(3, 27),
-(3, 29),
 (4, 1),
 (4, 3),
 (4, 16),
@@ -288,17 +327,17 @@ INSERT INTO `room_facilities` (`room_id`, `facility_id`) VALUES
 (5, 27),
 (5, 41),
 (6, 1),
-(6, 6),
+(6, 3),
+(6, 4),
 (6, 14),
 (6, 16),
-(6, 20),
-(6, 24),
-(6, 28),
-(6, 41),
 (7, 3),
 (7, 8),
 (7, 16),
-(7, 29);
+(7, 29),
+(8, 1),
+(8, 3),
+
 
 -- --------------------------------------------------------
 
@@ -349,6 +388,13 @@ ALTER TABLE `locations`
   ADD UNIQUE KEY `company_location` (`company_id`,`location_name`);
 
 --
+-- Indexes for table `restaurants`
+--
+ALTER TABLE `restaurants`
+  ADD PRIMARY KEY (`restaurant_id`),
+  ADD KEY `location_id` (`location_id`);
+
+--
 -- Indexes for table `roles`
 --
 ALTER TABLE `roles`
@@ -386,7 +432,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `companies`
 --
 ALTER TABLE `companies`
-  MODIFY `company_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `company_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `facilities`
@@ -398,7 +444,13 @@ ALTER TABLE `facilities`
 -- AUTO_INCREMENT for table `locations`
 --
 ALTER TABLE `locations`
-  MODIFY `location_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `location_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+
+--
+-- AUTO_INCREMENT for table `restaurants`
+--
+ALTER TABLE `restaurants`
+  MODIFY `restaurant_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -410,7 +462,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -427,6 +479,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `locations`
   ADD CONSTRAINT `locations_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `companies` (`company_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `restaurants`
+--
+ALTER TABLE `restaurants`
+  ADD CONSTRAINT `restaurants_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `roles`
@@ -455,5 +513,3 @@ ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `users_ibfk_3` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 COMMIT;
-
---
