@@ -98,6 +98,19 @@
   </div>
 </li>
 
+<!-- Restaurants Menu -->
+<li class="nav-item">
+  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRestaurants" aria-expanded="true" aria-controls="collapseRestaurants">
+    <i class="fas fa-utensils"></i>
+    <span>Restaurants</span>
+  </a>
+  <div id="collapseRestaurants" class="collapse" aria-labelledby="headingRestaurants" data-parent="#accordionSidebar">
+    <div class="bg-white py-2 collapse-inner rounded">
+      <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=manageRestaurant">Manage Restaurants</a>
+      <a class="collapse-item" href="<?= BASE_URL ?>/admin.php?action=newRestaurant">Add Restaurant</a>
+    </div>
+  </div>
+</li>
 
   <!-- Divider -->
   <hr class="sidebar-divider d-none d-md-block">
