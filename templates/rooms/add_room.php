@@ -1,101 +1,30 @@
 <?php
 // /templates/rooms/add_room.php
-// Admin Add Room Form
-// Facility Groups with Icons
-
-$facilityGroups = [
-    'Climate & Comfort' => [
-        ['name' => 'AC', 'icon' => 'fa-snowflake'],
-        ['name' => 'Fan', 'icon' => 'fa-fan'],
-        ['name' => 'Soundproof Windows', 'icon' => 'fa-window-maximize'],
-        ['name' => 'Hot Water / Geyser', 'icon' => 'fa-tint']
-    ],
-    'Beds & Sleeping' => [
-        ['name' => 'Single Bed', 'icon' => 'fa-bed'],
-        ['name' => 'Double Bed', 'icon' => 'fa-bed'],
-        ['name' => 'Queen Bed', 'icon' => 'fa-bed'],
-        ['name' => 'King Bed', 'icon' => 'fa-bed'],
-        ['name' => 'Extra Bed', 'icon' => 'fa-plus'],
-        ['name' => 'Extra Mattress', 'icon' => 'fa-plus-square'],
-        ['name' => 'Baby Cot / Cradle', 'icon' => 'fa-baby']
-    ],
-    'Bathroom & Toiletries' => [
-        ['name' => 'Attached Bathroom', 'icon' => 'fa-bath'],
-        ['name' => 'Toiletries', 'icon' => 'fa-pump-soap'],
-        ['name' => 'Towels & Bathrobe', 'icon' => 'fa-tshirt'],
-        ['name' => 'Hair Dryer', 'icon' => 'fa-wind']
-    ],
-    'Entertainment & Connectivity' => [
-        ['name' => 'LED TV', 'icon' => 'fa-tv'],
-        ['name' => 'Cable Channels', 'icon' => 'fa-satellite-dish'],
-        ['name' => 'Smart TV / Netflix', 'icon' => 'fa-film'],
-        ['name' => 'Music System', 'icon' => 'fa-music'],
-        ['name' => 'Free Wi-Fi', 'icon' => 'fa-wifi'],
-        ['name' => 'Intercom', 'icon' => 'fa-phone']
-    ],
-    'Work & Safety' => [
-        ['name' => 'Work Desk', 'icon' => 'fa-chair'],
-        ['name' => 'Safe Locker', 'icon' => 'fa-lock'],
-        ['name' => 'Key Card Access', 'icon' => 'fa-key'],
-        ['name' => 'CCTV Security', 'icon' => 'fa-video'],
-        ['name' => 'Fire Extinguisher', 'icon' => 'fa-fire-extinguisher'],
-        ['name' => 'Smoke Detector', 'icon' => 'fa-smog']
-    ],
-    'Views & Outdoor' => [
-        ['name' => 'Private Balcony', 'icon' => 'fa-umbrella-beach'],
-        ['name' => 'Sea View', 'icon' => 'fa-water'],
-        ['name' => 'Pool View', 'icon' => 'fa-swimming-pool'],
-        ['name' => 'Garden View', 'icon' => 'fa-leaf'],
-        ['name' => 'City View', 'icon' => 'fa-city'],
-        ['name' => 'Mountain View', 'icon' => 'fa-mountain'],
-        ['name' => 'Sofa / Sitting Area', 'icon' => 'fa-couch']
-    ],
-    'Services & Amenities' => [
-        ['name' => 'Lift Access', 'icon' => 'fa-elevator'],
-        ['name' => 'Parking Available', 'icon' => 'fa-car'],
-        ['name' => 'Power Backup', 'icon' => 'fa-bolt'],
-        ['name' => 'Laundry Service', 'icon' => 'fa-soap'],
-        ['name' => 'Luggage Storage', 'icon' => 'fa-suitcase'],
-        ['name' => 'Room Service', 'icon' => 'fa-bell'],
-        ['name' => 'Daily Housekeeping', 'icon' => 'fa-broom'],
-        ['name' => 'Tea/Coffee Maker', 'icon' => 'fa-mug-hot'],
-        ['name' => 'Welcome Drink', 'icon' => 'fa-glass-cheers'],
-        ['name' => 'Breakfast Included', 'icon' => 'fa-bread-slice'],
-        ['name' => 'Complimentary Water', 'icon' => 'fa-tint']
-    ],
-    'Leisure & Extras' => [
-        ['name' => 'Swimming Pool', 'icon' => 'fa-swimming-pool'],
-        ['name' => 'Gym / Fitness', 'icon' => 'fa-dumbbell'],
-        ['name' => 'Spa & Wellness', 'icon' => 'fa-spa'],
-        ['name' => 'Play Area', 'icon' => 'fa-child'],
-        ['name' => 'Restaurant', 'icon' => 'fa-utensils'],
-        ['name' => 'Bar', 'icon' => 'fa-cocktail'],
-        ['name' => 'Conference Room', 'icon' => 'fa-users'],
-        ['name' => 'Banquet Hall', 'icon' => 'fa-hotel']
-    ],
-    'Policies' => [
-        ['name' => 'Pet Friendly', 'icon' => 'fa-dog'],
-        ['name' => 'Smoking Allowed', 'icon' => 'fa-smoking'],
-        ['name' => 'Non-Smoking Room', 'icon' => 'fa-ban']
-    ]
-];
 
 require_once __DIR__ . '/../../config/config.php';
 ?>
 <?php include __DIR__ . "/../include/header.php"; ?>
 
 <div id="wrapper">
+
+    <!-- Sidebar -->
     <?php include __DIR__ . "/../include/sidebar.php"; ?>
+    <!-- End of Sidebar -->
 
     <div id="content-wrapper" class="d-flex flex-column">
+
         <div id="content">
+
+            <!-- Topbar -->
             <?php include __DIR__ . "/../include/topbar.php"; ?>
+            <!-- End of Topbar -->
 
             <div class="container-fluid">
 
+                <!-- Page Title -->
                 <h1 class="h3 mb-4 text-gray-800"><?= $results['pageTitle'] ?? 'Add Room' ?></h1>
 
-                <!-- Feedback -->
+                <!-- Feedback Message -->
                 <?php if (!empty($results['message'])): ?>
                     <div class="alert <?= (stripos($results['message'], 'success') !== false)?'alert-success':'alert-danger' ?> alert-dismissible fade show">
                         <?= (stripos($results['message'], 'success') !== false) ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
@@ -104,12 +33,12 @@ require_once __DIR__ . '/../../config/config.php';
                     </div>
                 <?php endif; ?>
 
-                <!-- Room Form -->
+                <!-- Room Add Form -->
                 <div class="card shadow mb-4">
                     <div class="card-body">
                         <form method="POST" action="<?= BASE_URL ?>/admin.php?action=newRoom">
 
-                            <!-- Location Dropdown with Company Info -->
+                            <!-- Location Dropdown -->
                             <div class="form-group mb-3">
                                 <label>Location:</label>
                                 <select name="location_id" id="location_id" class="form-control" required>
@@ -144,7 +73,7 @@ require_once __DIR__ . '/../../config/config.php';
                             <div class="form-group mb-3">
                                 <label>Max Occupancy <i class="fas fa-info-circle" title="Maximum number of guests allowed in this room"></i>:</label>
                                 <input type="number" name="max_occupancy" class="form-control" min="1" value="<?= htmlspecialchars($results['max_occupancy'] ?? 1) ?>">
-				<small class="form-text text-muted">How many people can stay in this room comfortably.</small>
+                                <small class="form-text text-muted">How many people can stay in this room comfortably.</small>
                             </div>
 
                             <!-- Description -->
@@ -153,12 +82,13 @@ require_once __DIR__ . '/../../config/config.php';
                                 <textarea name="description" class="form-control" rows="3"><?= htmlspecialchars($results['description'] ?? '') ?></textarea>
                             </div>
 
-                            <!-- Price & GST -->
+                            <!-- Price Section -->
                             <div class="form-group mb-3">
                                 <label>Base Price per Night:</label>
                                 <input type="number" step="0.01" name="base_price_per_night" class="form-control" min="0" required value="<?= htmlspecialchars($results['base_price_per_night'] ?? '') ?>">
                             </div>
 
+                            <!-- GST Dropdown -->
                             <div class="form-group mb-3">
                                 <label>GST % <i class="fas fa-info-circle" title="Goods and Services Tax applicable"></i>:</label>
                                 <select name="gst_percent" class="form-control">
@@ -170,47 +100,78 @@ require_once __DIR__ . '/../../config/config.php';
 
                             <!-- Total Inventory -->
                             <div class="form-group mb-3">
-                            <label>Total Inventory:</label>
-                           <input type="number" name="total_inventory" class="form-control" min="1" required value="<?= htmlspecialchars($results['total_inventory'] ?? 1) ?>">
-			   <small class="form-text text-muted">How many rooms of this type are available.</small>
+                                <label>Total Inventory:</label>
+                                <input type="number" name="total_inventory" class="form-control" min="1" required value="<?= htmlspecialchars($results['total_inventory'] ?? 1) ?>">
+                                <small class="form-text text-muted">How many rooms of this type are available.</small>
                             </div>
 
-                            <!-- Notes & Terms -->
+                            <!-- Notes -->
                             <div class="form-group mb-3">
                                 <label>Notes:</label>
                                 <textarea name="notes" class="form-control" rows="2"><?= htmlspecialchars($results['notes'] ?? '') ?></textarea>
                             </div>
+
+                            <!-- Terms & Conditions -->
                             <div class="form-group mb-3">
                                 <label>Terms & Conditions:</label>
                                 <textarea name="terms_conditions" class="form-control" rows="2"><?= htmlspecialchars($results['terms_conditions'] ?? '') ?></textarea>
                             </div>
 
-			    <!-- Facilities -->
-			    <div class="form-group mb-4">
-    			    <label>Facilities / Room Features:</label>
+                            <!-- Facilities Section -->
+                            <?php
+                            // -------------------------
+                            // FACILITIES FROM DATABASE (FIXED)
+                            // -------------------------
 
-    				<?php foreach ($facilityGroups as $group => $items): ?>
-        			<h6 class="mt-3"><strong><?= htmlspecialchars($group) ?></strong></h6>
-        			<div class="row">
-           			 <?php foreach ($items as $facility): ?>
-                		<div class="col-md-4">
-                    		<div class="form-check">
-                        	<input type="checkbox" class="form-check-input" 
-                        	name="facilities[]" 
-                               value="<?= htmlspecialchars($facility['name']) ?>" 
-                                id="facility<?= md5($facility['name']) ?>">
-                        	<label class="form-check-label" for="facility<?= md5($facility['name']) ?>">
-                            	<i class="fas <?= $facility['icon'] ?>"></i>
-                                <?= htmlspecialchars($facility['name']) ?>
-                                    </label>
-                    		   </div>
-                		 </div>
-            		       <?php endforeach; ?>
-        			</div>
-    			<?php endforeach; ?>
-			</div>
+                            // 1️⃣ Facility grouping by category (for display)
+                            $facilityGroups = [
+                                'Climate & Comfort' => ['AC','Fan','Soundproof Windows','Hot Water / Geyser'],
+                                'Beds & Sleeping' => ['Single Bed','Double Bed','Queen Bed','King Bed','Extra Bed','Extra Mattress','Baby Cot / Cradle'],
+                                'Bathroom & Toiletries' => ['Attached Bathroom','Toiletries','Towels & Bathrobe','Hair Dryer'],
+                                'Entertainment & Connectivity' => ['LED TV','Cable Channels','Smart TV / Netflix','Music System','Free Wi-Fi','Intercom'],
+                                'Work & Safety' => ['Work Desk','Safe Locker','Key Card Access','CCTV Security','Fire Extinguisher','Smoke Detector'],
+                                'Views & Outdoor' => ['Private Balcony','Sea View','Pool View','Garden View','City View','Mountain View','Sofa / Sitting Area'],
+                                'Services & Amenities' => ['Lift Access','Parking Available','Power Backup','Laundry Service','Luggage Storage','Room Service','Daily Housekeeping','Tea/Coffee Maker','Welcome Drink','Breakfast Included','Complimentary Water'],
+                                'Leisure & Extras' => ['Swimming Pool','Gym / Fitness','Spa & Wellness','Play Area','Restaurant','Bar','Conference Room','Banquet Hall'],
+                                'Policies' => ['Pet Friendly','Smoking Allowed','Non-Smoking Room']
+                            ];
 
-                            <!-- Status -->
+                            // 2️⃣ Load actual facility_id + icon from DB
+                            $stmt = $pdo->query("SELECT facility_id, name, icon FROM facilities ORDER BY name ASC");
+                            $facilityMap = [];
+                            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                                $facilityMap[$row['name']] = [
+                                    'id' => $row['facility_id'],
+                                    'icon' => $row['icon']
+                                ];
+                            }
+                            ?>
+
+                            <div class="form-group mb-4">
+                                <label>Facilities / Room Features:</label>
+                                <?php foreach ($facilityGroups as $group => $items): ?>
+                                    <h6 class="mt-3"><strong><?= htmlspecialchars($group) ?></strong></h6>
+                                    <div class="row">
+                                        <?php foreach ($items as $facilityName): ?>
+                                            <?php
+                                            $fid = $facilityMap[$facilityName]['id'] ?? null;
+                                            $icon = $facilityMap[$facilityName]['icon'] ?? 'fa-circle';
+                                            if (!$fid) continue; // Skip missing facility
+                                            ?>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" name="facilities[]" value="<?= $fid ?>" id="facility<?= $fid ?>">
+                                                    <label class="form-check-label" for="facility<?= $fid ?>">
+                                                        <i class="fas <?= htmlspecialchars($icon) ?>"></i> <?= htmlspecialchars($facilityName) ?>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <!-- Room Status -->
                             <div class="form-group mb-3">
                                 <label>Status:</label>
                                 <select name="status" class="form-control">
@@ -220,6 +181,7 @@ require_once __DIR__ . '/../../config/config.php';
                                 </select>
                             </div>
 
+                            <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary">Add Room</button>
                         </form>
                     </div>
@@ -228,6 +190,9 @@ require_once __DIR__ . '/../../config/config.php';
             </div>
         </div>
 
+        <!-- Footer -->
         <?php include __DIR__ . "/../include/footer.php"; ?>
+        <!-- End Footer -->
+
     </div>  
 </div>
