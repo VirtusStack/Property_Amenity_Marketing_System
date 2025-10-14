@@ -122,45 +122,44 @@ $offset      = ($currentPage - 1) * $perPage;
                             </table>
 
                         </div>
+			<!-- Pagination controls -->
+			<nav aria-label="Location pagination">
+    			<ul class="pagination justify-content-center align-items-center">
 
-                        <!-- Pagination controls -->
-                        <nav aria-label="Location pagination">
-                            <ul class="pagination justify-content-center align-items-center">
+        		<!-- Previous -->
+        		<li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+           		 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= max(1, $currentPage - 1) ?>">Previous</a>
+        		</li>
 
-                                <!-- Previous button -->
-                                <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= max(1, $currentPage - 1) ?>">Previous</a>
-                                </li>
+        		<!-- Numbers -->
+        		<?php for ($i = 1; $i <= $totalPages; $i++): ?>
+           		 <li class="page-item <?= ($i === $currentPage) ? 'active' : '' ?>">
+                	<a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= $i ?>"><?= $i ?></a>
+            		</li>
+        		<?php endfor; ?>
 
-                                <!-- Numbered pages -->
-                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                    <li class="page-item <?= ($i === $currentPage) ? 'active' : '' ?>">
-                                        <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= $i ?>"><?= $i ?></a>
-                                    </li>
-                                <?php endfor; ?>
+        		<!-- Next -->
+        		<li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+           		 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= min($totalPages, $currentPage + 1) ?>">Next</a>
+        		</li>
 
-                                <!-- Next button -->
-                                <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= min($totalPages, $currentPage + 1) ?>">Next</a>
-                                </li>
-
-                                <!-- Dropdown + Go -->
-                                <li class="page-item ms-2">
-                                    <form method="get" action="<?= BASE_URL ?>/admin.php" class="d-flex" style="gap:6px;">
-                                        <input type="hidden" name="action" value="manageLocations">
-                                        <select name="page" class="form-select form-select-sm">
-                                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                                <option value="<?= $i ?>" <?= ($i === $currentPage) ? 'selected' : '' ?>>Page <?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </select>
-                                        <button type="submit" class="btn btn-sm btn-primary">Go</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </nav> 
-                    </div>
-                </div>
-                <!-- End of Locations Table Card -->
+        		<!-- Dropdown + Go button (Bootstrap input group) -->
+        		<li class="page-item ms-2">
+            		<div class="input-group input-group-sm">
+                		<select name="page" class="form-select" onchange="this.form.submit()">
+                        	<?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        	<option value="<?= $i ?>" <?= ($i === $currentPage) ? 'selected' : '' ?>>Page <?= $i ?></option>
+                        	<?php endfor; ?>
+                	</select>
+                		<button type="submit" class="btn btn-primary">Go</button>
+            		</div>
+                     </li>
+   	    	</ul>
+      	   </nav>
+		
+      </div>
+    </div>
+             <!-- End of Locations Table Card -->
 
             </div>
             <!-- /.container-fluid -->
