@@ -11,6 +11,8 @@ require_once __DIR__ . "/classes/Role.php";
 require_once __DIR__ . "/classes/Company.php";
 require_once __DIR__ . "/classes/Location.php";
 require_once __DIR__ . "/classes/Room.php";
+require_once __DIR__ . '/classes/Restaurant.php';
+
 
 session_start(); // Start PHP session
  
@@ -92,7 +94,7 @@ case 'manageLocations':
     break;
 
 case 'editLocation':
-    editLocation();
+    editLocation();   
     break;
 
 // Room management
@@ -108,6 +110,18 @@ case 'editRoom':
     editRoom();
     break;
 
+// Restaurant management
+case 'newRestaurant':
+    newRestaurant();
+    break;
+
+case 'manageRestaurant':
+    manageRestaurants();
+    break;
+
+case 'editRestaurant':
+    editRestaurant();
+    break;
 
 // Role management
     case 'newRole':
@@ -613,7 +627,7 @@ function manageRooms() {
         }
     }
 
-    // Pagination
+    // Paginationt
     $perPage = 25;
     $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
     $offset = ($page - 1) * $perPage;
@@ -749,6 +763,147 @@ function editRoom() {
 }
 
 // -------------------------
+// NEW RESTAURANT / MENU
+// -------------------------
+function newRestaurant() {
+    global $pdo;
+
+    $results = [
+        'message'   => '',
+        'pageTitle' => 'Add New Restaurant/Menu',
+        'locations' => Location::getAll($pdo), // For dropdown
+    ];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Collect POST data
+        $location_id   = $_POST['location_id'] ?? '';
+        $menu_date     = $_POST['menu_date'] ?? '';
+        $meal_type     = $_POST['meal_type'] ?? '';
+        $menu_name     = trim($_POST['menu_name'] ?? '');
+        $no_of_dishes  = (int)($_POST['no_of_dishes'] ?? 10);
+        $base_price    = (float)($_POST['base_price'] ?? 0.0);
+        $description   = trim($_POST['description'] ?? '');
+        $status        = $_POST['status'] ?? 'active';
+
+        // Validation
+        if (empty($location_id) || empty($menu_date) || empty($meal_type) || empty($menu_name)) {
+            $results['message'] = " Please fill in all required fields!";
+        } else {
+            if (Restaurant::register($pdo, $location_id, $menu_date, $meal_type, $menu_name, $no_of_dishes, $base_price, $description, $status)) {
+                $results['message'] = " Restaurant/Menu added successfully!";
+                // Clear form values
+                foreach(['location_id','menu_date','meal_type','menu_name','no_of_dishes','base_price','description','status'] as $f) {
+                    $results[$f] = '';
+                }
+            } else {
+                $results['message'] = " Error adding restaurant/menu!";
+            }
+        }
+    }
+
+    require(TEMPLATE_PATH . "/restaurants/add_restaurant.php");
+}
+
+// -------------------------
+// MANAGE RESTAURANTS
+// -------------------------
+function manageRestaurants() {
+    global $pdo;
+
+    $results = $results ?? [
+        'pageTitle'    => 'Manage Restaurants',
+        'message'      => '',
+        'restaurants'  => [],
+        'currentPage'  => 1,
+        'totalPages'   => 1,
+        'total'        => 0,
+        'perPage'      => 25
+    ];
+
+    // Handle delete request
+    if (isset($_GET['delete'])) {
+        $restaurantId = (int)$_GET['delete'];
+        if (Restaurant::delete($pdo, $restaurantId)) {
+            $results['message'] = "Restaurant/Menu deleted successfully!";
+        } else {
+            $results['message'] = "Error deleting restaurant/menu!";
+        }
+    }
+
+    // --- Pagination ---
+    $perPage = 25;
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    $offset = ($page - 1) * $perPage;
+
+    // Fetch total count
+    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM restaurants WHERE is_deleted = 0");
+    $total = (int)$stmtTotal->fetchColumn();
+    $totalPages = ceil($total / $perPage);
+
+    // Fetch restaurants with location and company info
+    $stmt = $pdo->prepare("
+        SELECT r.*, l.location_name, l.place, l.city, l.state, l.country, c.company_name
+        FROM restaurants r
+        LEFT JOIN locations l ON r.location_id = l.location_id
+        LEFT JOIN companies c ON l.company_id = c.company_id
+        WHERE r.is_deleted = 0
+        ORDER BY r.restaurant_id ASC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    $results['restaurants'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Pagination info
+    $results['currentPage'] = $page;
+    $results['totalPages']  = $totalPages;
+    $results['total']       = $total;
+    $results['perPage']     = $perPage;
+
+    require(TEMPLATE_PATH . "/restaurants/manage_restaurant.php");
+}
+
+// -------------------------
+// EDIT RESTAURANT / MENU
+// -------------------------
+function editRestaurant() {
+    global $pdo;
+    $results = ['message' => '', 'pageTitle' => 'Edit Restaurant/Menu'];
+
+    if (!isset($_GET['id'])) die(" No restaurant/menu ID given.");
+    $restaurantId = (int)$_GET['id'];
+
+    // Get restaurant/menu
+    $restaurant = Restaurant::getById($pdo, $restaurantId);
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $restaurantData = [
+            'location_id'     => $_POST['location_id'] ?? '',
+            'restaurant_name' => trim($_POST['restaurant_name'] ?? ''), // Added
+            'menu_date'       => $_POST['menu_date'] ?? '',
+            'meal_type'       => $_POST['meal_type'] ?? '',
+            'menu_name'       => trim($_POST['menu_name'] ?? ''),
+            'no_of_dishes'    => (int)($_POST['no_of_dishes'] ?? 10),
+            'base_price'      => (float)($_POST['base_price'] ?? 0.0),
+            'description'     => trim($_POST['description'] ?? ''),
+            'status'          => $_POST['status'] ?? 'active',
+        ];
+
+        if (Restaurant::update($pdo, $restaurantId, $restaurantData)) {
+            $results['message'] = " Restaurant/Menu updated successfully!";
+            $restaurant = Restaurant::getById($pdo, $restaurantId); // refresh
+        } else {
+            $results['message'] = " Error updating restaurant/menu!";
+        }
+    }
+
+    $results['restaurant'] = $restaurant;
+    $results['locations']  = Location::getAll($pdo);
+
+    require(TEMPLATE_PATH . "/restaurants/edit_restaurant.php");
+}
+// -------------------------
 // ROLE MANAGEMENT
 // -------------------------
 function newRole() {
@@ -832,4 +987,4 @@ function editRole() {
     $results['companies'] = Company::getAll($pdo);
 
     require(TEMPLATE_PATH . "/roles/edit_role.php");
-}
+}                                                                                                              
