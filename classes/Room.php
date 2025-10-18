@@ -9,9 +9,10 @@ class Room {
         try {
             $stmt = $pdo->prepare("
                 INSERT INTO rooms (
-                    location_id, room_name, room_type, description, room_view,max_occupancy,
-                    total_inventory, base_price_per_night, gst_percent, notes, terms_conditions, status, created_by
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    location_id, room_name, room_type, description, room_view, max_occupancy,
+                    total_inventory, base_price_per_night, gst_percent, gst_inclusive,
+                    notes, terms_conditions, status, created_by
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $data['location_id'] ?? null,
@@ -19,17 +20,18 @@ class Room {
                 $data['room_type'] ?? '',
                 $data['description'] ?? '',
                 $data['room_view'] ?? '',
-		 $data['max_occupancy'] ?? 1,      // default 1
+                $data['max_occupancy'] ?? 1,      // default 1
                 $data['total_inventory'] ?? 0,
                 $data['base_price_per_night'] ?? 0.00,
                 $data['gst_percent'] ?? 0.00,
+                $data['gst_inclusive'] ?? 'exclusive', // ✅ new field
                 $data['notes'] ?? '',
                 $data['terms_conditions'] ?? '',
                 $data['status'] ?? 'active',
                 $data['created_by'] ?? null
             ]);
 
-            // Return the new room ID as integer
+            // Return the new room ID
             return (int)$pdo->lastInsertId();
 
         } catch (PDOException $e) {
@@ -76,10 +78,10 @@ class Room {
         try {
             $stmt = $pdo->prepare("
                 UPDATE rooms 
-                SET location_id=?, room_name=?, room_type=?, description=?, room_view=?,max_occupancy=?,
-                    total_inventory=?, base_price_per_night=?, gst_percent=?, 
-                    notes=?, terms_conditions=?, status=?, updated_at=NOW()
-                WHERE room_id=?
+                SET location_id = ?, room_name = ?, room_type = ?, description = ?, room_view = ?, max_occupancy = ?,
+                    total_inventory = ?, base_price_per_night = ?, gst_percent = ?, gst_inclusive = ?, 
+                    notes = ?, terms_conditions = ?, status = ?, updated_at = NOW()
+                WHERE room_id = ?
             ");
             return $stmt->execute([
                 $data['location_id'] ?? null,
@@ -87,10 +89,11 @@ class Room {
                 $data['room_type'] ?? '',
                 $data['description'] ?? '',
                 $data['room_view'] ?? '',
-		$data['max_occupancy'] ?? 1,      //default 1
+                $data['max_occupancy'] ?? 1,
                 $data['total_inventory'] ?? 0,
                 $data['base_price_per_night'] ?? 0.00,
                 $data['gst_percent'] ?? 0.00,
+                $data['gst_inclusive'] ?? 'exclusive', // ✅ new field
                 $data['notes'] ?? '',
                 $data['terms_conditions'] ?? '',
                 $data['status'] ?? 'active',
@@ -140,10 +143,10 @@ class Room {
         }
     }
 
-    // MAP facilities to a room (used after creating room)
+    // MAP facilities to a room
     public static function mapFacilities($pdo, $room_id, $facility_ids = []) {
         try {
-            // Clear existing mapping first
+            // Clear existing mappings
             $stmt = $pdo->prepare("DELETE FROM room_facilities WHERE room_id = ?");
             $stmt->execute([$room_id]);
 
