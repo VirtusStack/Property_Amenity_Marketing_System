@@ -25,11 +25,18 @@ class User {
     // AUTHENTICATE: Check email/password
     public static function authenticate($pdo, $email, $password) {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+            // Explicitly select needed columns including location_id
+            $stmt = $pdo->prepare("
+                SELECT user_id, name, email, role_id, company_id, location_id, password 
+                FROM users 
+                WHERE email = ?
+            ");
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user && password_verify($password, $user['password'])) {
+                // Remove password before returning
+                unset($user['password']);
                 return $user;
             }
             return false;
@@ -58,7 +65,12 @@ class User {
     // READ: Single user
     public static function getById($pdo, $userId) {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
+            // Explicitly select needed columns including location_id
+            $stmt = $pdo->prepare("
+                SELECT user_id, name, email, role_id, company_id, location_id 
+                FROM users 
+                WHERE user_id = ?
+            ");
             $stmt->execute([$userId]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -74,11 +86,17 @@ class User {
                 $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
                 $sql = "UPDATE users SET name=?, email=?, password=?, role_id=?, company_id=?, location_id=? WHERE user_id=?";
                 $stmt = $pdo->prepare($sql);
-                return $stmt->execute([$data['name'], $data['email'], $hashedPassword, $data['role_id'], $data['company_id'], $data['location_id'], $userId]);
+                return $stmt->execute([
+                    $data['name'], $data['email'], $hashedPassword, 
+                    $data['role_id'], $data['company_id'], $data['location_id'], $userId
+                ]);
             } else {
                 $sql = "UPDATE users SET name=?, email=?, role_id=?, company_id=?, location_id=? WHERE user_id=?";
                 $stmt = $pdo->prepare($sql);
-                return $stmt->execute([$data['name'], $data['email'], $data['role_id'], $data['company_id'], $data['location_id'], $userId]);
+                return $stmt->execute([
+                    $data['name'], $data['email'], 
+                    $data['role_id'], $data['company_id'], $data['location_id'], $userId
+                ]);
             }
         } catch (PDOException $e) {
             error_log("Update user failed: " . $e->getMessage());
@@ -100,7 +118,12 @@ class User {
     // READ: Get user by email
     public static function getByEmail($pdo, $email) {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+            // Explicitly select needed columns including location_id
+            $stmt = $pdo->prepare("
+                SELECT user_id, name, email, role_id, company_id, location_id 
+                FROM users 
+                WHERE email = ?
+            ");
             $stmt->execute([$email]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -108,5 +131,5 @@ class User {
             return false;
         }
     }
-
 }
+
