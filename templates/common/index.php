@@ -118,13 +118,41 @@ $currentUserRole = "Admin";
                                 <div class="card-title"><i class="fas fa-utensils"></i> Restaurant</div>
                                 <div class="card-text">
 				     <!--  Controller-based links -->
-                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageRestaurant">Manage Restaurant</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageRestaurants">Manage Restaurant</a></p>
                                     <p><a href="<?= BASE_URL ?>/admin.php?action=newRestaurant">Add Restaurant</a></p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+
+		  <!-- Swimminng_pool  Card -->
+                    <div class="col-xl-4 col-md-6 mb-4">
+                       <div class="card border-left-danger shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="card-title"><i class="fas fa-swimmer"></i> Swimming Pool</div>
+                                <div class="card-text">
+				     <!--  Controller-based links -->
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageSwimmingPools">Manage Swimming Pool</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newSwimmingPool">Add Swimming Pool</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+		  <!-- Parking  Card -->
+                    <div class="col-xl-4 col-md-6 mb-4">
+                       <div class="card border-left-secondary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="card-title"><i class="fas fa-parking"></i> Parking </div>
+                                <div class="card-text">
+				     <!--  Controller-based links -->
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=manageParkings">Manage Parking</a></p>
+                                    <p><a href="<?= BASE_URL ?>/admin.php?action=newParking">Add Parking </a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- End Dashboard Cards -->
 
