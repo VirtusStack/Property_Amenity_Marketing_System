@@ -1,9 +1,9 @@
 -- Database: `property_system`
-
---
--- Table structure for table `companies`
 --
 
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `companies`
 --
 
@@ -189,6 +189,89 @@ INSERT INTO `locations` (`location_id`, `location_name`, `place`, `country`, `st
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `location_plugins`
+--
+
+CREATE TABLE `location_plugins` (
+  `id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `plugin_id` int(11) NOT NULL,
+  `is_enabled` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `location_plugins`
+--
+
+INSERT INTO `location_plugins` (`id`, `location_id`, `plugin_id`, `is_enabled`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, '2025-10-18 05:37:15', '2025-10-15 09:38:21'),
+(2, 1, 2, 1, '2025-10-18 05:37:15', '2025-10-15 12:06:15'),
+(3, 1, 3, 0, '2025-10-18 05:37:15', '2025-10-16 12:49:53'),
+(4, 1, 4, 0, '2025-10-18 05:37:15', '2025-10-16 10:29:23'),
+(5, 1, 5, 1, '2025-10-18 05:37:15', '2025-10-16 12:49:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parking`
+--
+
+CREATE TABLE `parking` (
+  `parking_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `parking_name` varchar(100) NOT NULL,
+  `parking_number` varchar(50) DEFAULT NULL,
+  `vehicle_number` varchar(50) DEFAULT NULL,
+  `type` enum('Car','Bike','Bus','Truck','All') DEFAULT 'All',
+  `capacity` int(11) DEFAULT 0,
+  `is_covered` tinyint(1) DEFAULT 0,
+  `charging_point_available` tinyint(1) DEFAULT 0,
+  `status` enum('Available','Full','Maintenance') DEFAULT 'Available',
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `parking`
+--
+
+INSERT INTO `parking` (`parking_id`, `location_id`, `parking_name`, `parking_number`, `vehicle_number`, `type`, `capacity`, `is_covered`, `charging_point_available`, `status`, `description`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Front Parking', 'P001', 'MH12AB3456', 'Car', 20, 0, 1, 'Available', 'Open car parking near entrance', '2025-10-18 11:15:56', '2025-10-16 11:15:56'),
+(2, 1, 'Basement Parking', 'P002', NULL, 'Car', 30, 1, 0, 'Available', 'Covered basement parking area', '2025-10-18 11:15:56', '2025-10-16 11:15:56'),
+(3, 2, 'Bike Zone', 'P003', 'MH14XY9876', 'Bike', 15, 0, 0, 'Full', 'Dedicated bike parking area', '2025-10-18 11:15:56', '2025-10-18 11:15:56');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `plugin_master`
+--
+
+CREATE TABLE `plugin_master` (
+  `plugin_id` int(11) NOT NULL,
+  `plugin_name` varchar(100) NOT NULL,
+  `icon` varchar(100) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `plugin_master`
+--
+
+INSERT INTO `plugin_master` (`plugin_id`, `plugin_name`, `icon`, `description`, `status`, `created_at`) VALUES
+(1, 'Restaurant', 'fa-utensils', 'Manage menus, food and buffet options', 'active', '2025-10-15 10:50:24'),
+(2, 'Swimming Pool', 'fa-swimmer', 'Manage swimming pool timing and capacity', 'active', '2025-10-16 10:50:24'),
+(3, 'Parking', 'fa-parking', 'Manage parking area and vehicle slots', 'active', '2025-10-17 10:50:24'),
+(4, 'Spa', 'fa-spa', 'Manage spa facilities and bookings', 'active', '2025-10-17 10:50:24'),
+(5, 'Gym', 'fa-dumbbell', 'Manage gym facilities and memberships', 'active', '2025-10-17 10:50:24');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `restaurants`
 --
 
@@ -265,6 +348,7 @@ CREATE TABLE `rooms` (
   `available_count` int(11) GENERATED ALWAYS AS (`total_inventory` - `booked_count`) STORED,
   `base_price_per_night` decimal(10,2) NOT NULL,
   `gst_percent` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `gst_inclusive` enum('inclusive','exclusive') DEFAULT 'exclusive',
   `final_price` decimal(10,2) GENERATED ALWAYS AS (`base_price_per_night` + `base_price_per_night` * `gst_percent` / 100) STORED,
   `status` enum('active','inactive','maintenance') DEFAULT 'active',
   `notes` text DEFAULT NULL,
@@ -278,14 +362,23 @@ CREATE TABLE `rooms` (
 -- Dumping data for table `rooms`
 --
 
-INSERT INTO `rooms` (`room_id`, `location_id`, `room_name`, `room_type`, `description`, `room_view`, `max_occupancy`, `total_inventory`, `booked_count`, `base_price_per_night`, `gst_percent`, `status`, `notes`, `terms_conditions`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, 26, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 1, 4, 0, 4500.00, 18.00, 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-10-08 05:54:13', '2025-10-11 12:13:55', 1),
-(3, 26, '102', 'Deluxe', 'Modern deluxe room with city skyline view. Ideal for business travelers.', 'City View', 1, 5, 0, 4200.00, 18.00, 'active', 'Smoking allowed in designated area. Complimentary tea/coffee.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included.', '2025-10-08 06:17:08', '2025-10-11 12:14:21', 1),
-(4, 1, '103', 'Standard', 'Cozy standard room overlooking the garden. Great for short stays.', 'Garden View', 1, 4, 0, 3200.00, 18.00, 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:26:54', '2025-10-08 06:26:54', 1),
-(5, 1, '104', 'Suite', 'Luxury suite with living area and sea view. Perfect for families or special occasions.', 'Sea View', 1, 2, 0, 7500.00, 18.00, 'active', 'No smoking. Welcome drink included. Complimentary water bottles.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:29:18', '2025-10-08 06:29:18', 1),
-(6, 1, '105', 'Suite', '', 'Sea View', 4, 2, 0, 7500.00, 18.00, 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included', '2025-10-08 07:31:08', '2025-10-14 04:48:19', 1),
-(7, 1, '106', 'Suite', '', 'Sea View', 1, 2, 0, 3500.00, 18.00, 'active', '', '', '2025-10-08 07:51:23', '2025-10-09 05:20:57', 1),
-(8, 21, '107', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers', 'Sea View', 4, 1, 0, 3200.00, 18.00, 'active', 'No smoking. Welcome drink included. Complimentary water bottles', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included', '2025-10-09 06:05:32', '2025-10-09 06:05:32', 1),
+INSERT INTO `rooms` (`room_id`, `location_id`, `room_name`, `room_type`, `description`, `room_view`, `max_occupancy`, `total_inventory`, `booked_count`, `base_price_per_night`, `gst_percent`, `gst_inclusive`, `status`, `notes`, `terms_conditions`, `created_at`, `updated_at`, `created_by`) VALUES
+(1, 26, '101', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers.', 'Sea View', 1, 4, 0, 4500.00, 18.00, 'exclusive', 'active', 'No smoking. Complimentary water bottles included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included.', '2025-10-08 05:54:13', '2025-10-13 12:13:55', 1),
+(3, 26, '102', 'Deluxe', 'Modern deluxe room with city skyline view. Ideal for business travelers.', 'City View', 1, 5, 0, 4200.00, 18.00, 'exclusive', 'active', 'Smoking allowed in designated area. Complimentary tea/coffee.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included.', '2025-10-08 06:17:08', '2025-10-13 12:14:21', 1),
+(4, 1, '103', 'Standard', 'Cozy standard room overlooking the garden. Great for short stays.', 'Garden View', 1, 4, 0, 3200.00, 18.00, 'exclusive', 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:26:54', '2025-10-08 06:26:54', 1),
+(5, 1, '104', 'Suite', 'Luxury suite with living area and sea view. Perfect for families or special occasions.', 'Sea View', 1, 2, 0, 7500.00, 18.00, 'exclusive', 'active', 'No smoking. Welcome drink included. Complimentary water bottles.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-08 06:29:18', '2025-10-08 06:29:18', 1),
+(6, 1, '105', 'Suite', '', 'Sea View', 4, 2, 0, 7500.00, 18.00, 'exclusive', 'active', 'No pets allowed. Daily housekeeping included.', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included', '2025-10-08 07:31:08', '2025-10-14 04:48:19', 1),
+(7, 1, '106', 'Suite', '', 'Sea View', 1, 2, 0, 3500.00, 18.00, 'exclusive', 'active', '', '', '2025-10-08 07:51:23', '2025-10-09 05:20:57', 1),
+(8, 21, '107', 'Deluxe', 'Spacious deluxe room with balcony and sea view. Perfect for couples or solo travelers', 'Sea View', 4, 1, 0, 3200.00, 18.00, 'exclusive', 'active', 'No smoking. Welcome drink included. Complimentary water bottles', 'Check-in after 2 PM, check-out before 11 AM. Breakfast not included', '2025-10-09 06:05:32', '2025-10-09 06:05:32', 1),
+(9, 21, '101', 'Deluxe', 'Sea view deluxe room with balcony', 'Sea View', 2, 5, 0, 4500.00, 18.00, 'exclusive', 'active', NULL, NULL, '2025-10-13 12:11:29', '2025-10-13 12:11:29', NULL),
+(10, 21, '102', 'Suite', 'Luxury suite with ocean view', 'Sea View', 4, 3, 0, 7500.00, 18.00, 'exclusive', 'active', NULL, NULL, '2025-10-13 12:11:29', '2025-10-13 12:11:29', NULL),
+(11, 26, '201', 'Standard', 'Cozy mountain view room', 'Mountain View', 2, 4, 0, 3500.00, 18.00, 'exclusive', 'active', '', '', '2025-10-13 12:11:29', '2025-10-13 12:14:37', NULL),
+(13, 25, '102', 'Deluxe', '', 'Garden View', 1, 4, 0, 4100.00, 18.00, 'exclusive', 'active', '', '', '2025-10-13 13:29:45', '2025-10-13 13:29:45', 1),
+(14, 25, '105', 'Deluxe', '', 'Garden View', 2, 6, 0, 4100.00, 18.00, 'exclusive', 'active', '', '', '2025-10-14 04:05:12', '2025-10-14 04:05:12', 1),
+(15, 26, '102', 'Deluxe', '', 'Garden View', 4, 4, 0, 3200.00, 18.00, 'exclusive', 'active', '', '', '2025-10-14 04:40:11', '2025-10-14 04:40:11', 1),
+(16, 26, '102', 'Deluxe', '', 'Garden View', 4, 4, 0, 3200.00, 18.00, 'exclusive', 'active', '', 'Check-in after 2 PM, check-out before 11 AM. Breakfast included', '2025-10-14 04:45:09', '2025-10-14 04:46:15', 1),
+(17, 25, '204', 'Standard', '', 'Sea View', 3, 4, 0, 5100.00, 18.00, 'exclusive', 'active', '', '', '2025-10-14 06:12:51', '2025-10-14 06:12:51', 1),
+(18, 26, '204', 'Suite', '', 'City View', 4, 4, 0, 5600.00, 18.00, 'exclusive', 'active', '', '', '2025-10-14 10:38:44', '2025-10-14 10:49:00', 1);
 
 -- --------------------------------------------------------
 
@@ -337,7 +430,70 @@ INSERT INTO `room_facilities` (`room_id`, `facility_id`) VALUES
 (7, 29),
 (8, 1),
 (8, 3),
+(13, 3),
+(13, 23),
+(13, 58),
+(14, 1),
+(14, 3),
+(14, 12),
+(14, 16),
+(14, 28),
+(16, 1),
+(16, 3),
+(16, 14),
+(16, 16),
+(17, 1),
+(17, 3),
+(17, 12),
+(17, 16),
+(18, 1),
+(18, 3),
+(18, 14),
+(18, 16);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `swimming_pools`
+--
+
+CREATE TABLE `swimming_pools` (
+  `id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `capacity` int(11) DEFAULT NULL,
+  `instructor_available` tinyint(1) DEFAULT 0,
+  `lifeguard_available` tinyint(1) DEFAULT 0,
+  `opening_time` time DEFAULT NULL,
+  `closing_time` time DEFAULT NULL,
+  `access_type` varchar(50) DEFAULT NULL,
+  `max_charge` decimal(10,2) DEFAULT NULL,
+  `price_per_hour` decimal(10,2) DEFAULT NULL,
+  `price_per_day` decimal(10,2) DEFAULT NULL,
+  `safety_rules` text DEFAULT NULL,
+  `terms_conditions` text DEFAULT NULL,
+  `instructions` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `swimming_pools`
+--
+
+INSERT INTO `swimming_pools` (`id`, `location_id`, `name`, `type`, `status`, `capacity`, `instructor_available`, `lifeguard_available`, `opening_time`, `closing_time`, `access_type`, `max_charge`, `price_per_hour`, `price_per_day`, `safety_rules`, `terms_conditions`, `instructions`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Blue Lagoon', 'Outdoor', 'active', 40, 1, 1, '06:00:00', '20:00:00', 'Public', 500.00, 50.00, 400.00, 'No running, no diving in shallow end, shower before entering.', 'Children must be supervised, management not responsible for lost items.', 'Use the designated swimming lanes for lap swimming.', '2025-10-16 12:43:14', '2025-10-18 12:47:16'),
+(2, 2, 'Aqua Paradise', 'Indoor', 'active', 30, 0, 1, '08:00:00', '22:00:00', 'Guests only', 800.00, 100.00, 700.00, 'No glass bottles, no food in pool area.', 'Booking required for guests, no refund on cancellations.', 'Wear proper swimwear, follow lifeguard instructions.', '2025-10-16 12:43:14', '2025-10-16 12:43:14'),
+(3, 3, 'Infinity Splash', 'Infinity / Outdoor', 'inactive', 40, 1, 0, '07:00:00', '19:00:00', 'Private', 1200.00, 150.00, 1000.00, 'No diving near edge, no running.', 'Membership required, no children under 12.', 'Use designated lounge area before entering the pool.', '2025-10-17 12:43:14', '2025-10-17 12:43:14'),
+(4, 1, 'Crystal Waters', 'Indoor', 'active', 25, 1, 1, '09:00:00', '21:00:00', 'Public', 600.00, 60.00, 500.00, 'No running, no diving, children must be supervised.', 'No refund on cancellations.', 'Follow lane markings for lap swimming.', '2025-10-18 12:43:14', '2025-10-18 12:43:14'),
+(5, 2, 'Sunset Pool', 'Outdoor', 'active', 60, 0, 1, '06:30:00', '19:30:00', 'Public', 700.00, 70.00, 600.00, 'No diving in shallow end, no food in pool area.', 'Children must be accompanied by adults.', 'Follow lifeguard instructions.', '2025-10-18 12:43:14', '2025-10-18 12:43:14'),
+(6, 3, 'Aqua Dome', 'Indoor', 'inactive', 35, 1, 0, '07:30:00', '20:30:00', 'Private', 900.00, 90.00, 750.00, 'Proper swimwear required, no running.', 'Membership required.', 'Children under 12 not allowed without adult.', '2025-10-18 12:43:14', '2025-10-18 12:43:14'),
+(7, 1, 'Wave Rider', 'Outdoor', 'active', 45, 1, 1, '08:00:00', '18:00:00', 'Public', 550.00, 55.00, 450.00, 'No diving in shallow end.', 'Follow lifeguard instructions.', 'Use lane markings for swimming.', '2025-10-18 12:43:14', '2025-10-18 12:43:14'),
+(8, 2, 'Lagoon Retreat', 'Infinity / Outdoor', 'active', 50, 0, 1, '06:00:00', '21:00:00', 'Guests only', 1000.00, 100.00, 850.00, 'No running, no diving near edge.', 'Booking required for guests.', 'Follow lifeguard instructions.', '2025-10-18 12:43:14', '2025-10-18 12:43:14'),
+(9, 3, 'Coral Cove', 'Indoor', 'active', 30, 1, 1, '07:00:00', '22:00:00', 'Private', 800.00, 80.00, 700.00, 'Proper swimwear required, no running.', 'Membership required.', 'Children under 12 not allowed without adult.', '2025-10-18 12:43:14', '2025-10-18 12:43:14'),
+(10, 1, 'Ocean Breeze', 'Outdoor', 'inactive', 40, 1, 0, '06:30:00', '20:30:00', 'Public', 750.00, 75.00, 600.00, 'No diving, shower before entering.', 'Children must be accompanied by adults.', 'Use lane markings for lap swimming.', '2025-10-18 12:43:14', '2025-10-18 12:43:14');
 
 -- --------------------------------------------------------
 
@@ -362,7 +518,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `company_id`, `location_id`, `name`, `email`, `password`, `role_id`, `created_by`, `created_at`) VALUES
-(1, 1, NULL, 'Roman Roy', 'roman@example.com', '$2y$10$L6QmixQ9KVYVHLx/uDDg0.45JVo/9cPvhlknPbFZpUCC7ewcubpYW', 1, NULL, '2025-09-22 03:17:08');
+(1, 1, 1, 'Roman Roy', 'roman@example.com', '$2y$10$fHJ0wvrXNLHEfVOT/17qDOyWQ76hDEutVi90zJTly446CMzQsp9zq', 1, NULL, '2025-09-22 03:17:08'),
+(2, 1, NULL, 'Roman Roy', 'roman@12.com', '$2y$10$L6QmixQ9KVYVHLx/uDDg0.45JVo/9cPvhlknPbFZpUCC7ewcubpYW', 1, NULL, '2025-09-21 21:47:08');
 
 --
 -- Indexes for dumped tables
@@ -386,6 +543,28 @@ ALTER TABLE `facilities`
 ALTER TABLE `locations`
   ADD PRIMARY KEY (`location_id`),
   ADD UNIQUE KEY `company_location` (`company_id`,`location_name`);
+
+--
+-- Indexes for table `location_plugins`
+--
+ALTER TABLE `location_plugins`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `location_id` (`location_id`),
+  ADD KEY `plugin_id` (`plugin_id`);
+
+--
+-- Indexes for table `parking`
+--
+ALTER TABLE `parking`
+  ADD PRIMARY KEY (`parking_id`),
+  ADD KEY `location_id` (`location_id`);
+
+--
+-- Indexes for table `plugin_master`
+--
+ALTER TABLE `plugin_master`
+  ADD PRIMARY KEY (`plugin_id`),
+  ADD UNIQUE KEY `plugin_name` (`plugin_name`);
 
 --
 -- Indexes for table `restaurants`
@@ -414,6 +593,13 @@ ALTER TABLE `rooms`
 ALTER TABLE `room_facilities`
   ADD PRIMARY KEY (`room_id`,`facility_id`),
   ADD KEY `facility_id` (`facility_id`);
+
+--
+-- Indexes for table `swimming_pools`
+--
+ALTER TABLE `swimming_pools`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `location_id` (`location_id`);
 
 --
 -- Indexes for table `users`
@@ -447,6 +633,24 @@ ALTER TABLE `locations`
   MODIFY `location_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
+-- AUTO_INCREMENT for table `location_plugins`
+--
+ALTER TABLE `location_plugins`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `parking`
+--
+ALTER TABLE `parking`
+  MODIFY `parking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `plugin_master`
+--
+ALTER TABLE `plugin_master`
+  MODIFY `plugin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `restaurants`
 --
 ALTER TABLE `restaurants`
@@ -462,13 +666,19 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `swimming_pools`
+--
+ALTER TABLE `swimming_pools`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -479,6 +689,19 @@ ALTER TABLE `users`
 --
 ALTER TABLE `locations`
   ADD CONSTRAINT `locations_ibfk_1` FOREIGN KEY (`company_id`) REFERENCES `companies` (`company_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `location_plugins`
+--
+ALTER TABLE `location_plugins`
+  ADD CONSTRAINT `location_plugins_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `location_plugins_ibfk_2` FOREIGN KEY (`plugin_id`) REFERENCES `plugin_master` (`plugin_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `parking`
+--
+ALTER TABLE `parking`
+  ADD CONSTRAINT `parking_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `restaurants`
@@ -504,6 +727,12 @@ ALTER TABLE `rooms`
 ALTER TABLE `room_facilities`
   ADD CONSTRAINT `room_facilities_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `room_facilities_ibfk_2` FOREIGN KEY (`facility_id`) REFERENCES `facilities` (`facility_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `swimming_pools`
+--
+ALTER TABLE `swimming_pools`
+  ADD CONSTRAINT `swimming_pools_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `users`
