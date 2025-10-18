@@ -71,8 +71,8 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
                                         <th>Base Price</th>
                                         <th>GST %</th>
                                         <th>Final Price</th>
-					<th>Notes</th>
-					<th>Terms & Conditions</th>
+                                        <th>Notes</th>
+                                        <th>Terms & Conditions</th>
                                         <th>Facilities</th>
                                         <th>Status</th>
                                         <th>Actions</th>
@@ -81,6 +81,20 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
                                 <tbody>
                                 <?php if (!empty($rooms)): ?>
                                     <?php foreach ($rooms as $room): ?>
+                                        <?php
+                                            $base = floatval($room['base_price_per_night'] ?? 0);
+                                            $gstPercent = floatval($room['gst_percent'] ?? 0);
+                                            $gstType = $room['gst_inclusive'] ?? 'exclusive';
+
+                                            // Calculate final price
+                                            if ($gstType === 'inclusive') {
+                                                $final = $base;
+                                                $gstLabel = '<span class="badge bg-success">Incl. GST</span>';
+                                            } else {
+                                                $final = $base + ($base * $gstPercent / 100);
+                                                $gstLabel = '<span class="badge bg-info">+ GST</span>';
+                                            }
+                                        ?>
                                         <tr>
                                             <td><?= $room['room_id'] ?></td>
                                             <td><?= htmlspecialchars($room['company_name'] ?? '-') ?></td>
@@ -90,14 +104,27 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
                                             <td><?= htmlspecialchars($room['room_view'] ?? '-') ?></td>
                                             <td><?= htmlspecialchars($room['max_occupancy'] ?? '-') ?></td>
                                             <td><?= htmlspecialchars($room['total_inventory'] ?? '-') ?></td>
-                                            <td><?= htmlspecialchars($room['base_price_per_night'] ?? '-') ?></td>
-                                            <td><?= htmlspecialchars($room['gst_percent'] ?? '-') ?></td>
-                                            <td><?= htmlspecialchars($room['final_price'] ?? '-') ?></td>
-					    <td><?= htmlspecialchars($room['notes'] ?? '-') ?></td>
-					    <td><?= htmlspecialchars($room['terms_conditions'] ?? '-') ?></td>
+
+                                            <!-- Base Price -->
+                                            <td>
+                                                ₹<?= number_format($base, 2) ?><br>
+                                                <?= $gstLabel ?>
+                                            </td>
+
+                                            <!-- GST % -->
+                                            <td><?= htmlspecialchars($gstPercent) ?>%</td>
+
+                                            <!-- Final Price -->
+                                            <td>
+                                                <strong>₹<?= number_format($final, 2) ?></strong>
+                                            </td>
+
+                                            <td><?= htmlspecialchars($room['notes'] ?? '-') ?></td>
+                                            <td><?= htmlspecialchars($room['terms_conditions'] ?? '-') ?></td>
+
+                                            <!-- Facilities -->
                                             <td>
                                                 <?php
-                                                    // Fetch facilities for this room
                                                     $facilities = Room::getFacilities($pdo, $room['room_id']);
                                                     if ($facilities) {
                                                         $names = array_map(fn($f) => htmlspecialchars($f['facility_name']), $facilities);
@@ -107,7 +134,19 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
                                                     }
                                                 ?>
                                             </td>
-                                            <td><?= htmlspecialchars(ucfirst($room['status'])) ?></td>
+
+                                            <!-- Status -->
+                                            <td>
+                                                <?php if ($room['status'] === 'active'): ?>
+                                                    <span class="badge bg-success">Active</span>
+                                                <?php elseif ($room['status'] === 'inactive'): ?>
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-warning text-dark">Maintenance</span>
+                                                <?php endif; ?>
+                                            </td>
+
+                                            <!-- Actions -->
                                             <td>
                                                 <a class="btn btn-sm btn-warning" href="<?= BASE_URL ?>/admin.php?action=editRoom&id=<?= $room['room_id'] ?>">
                                                     <i class="bi bi-pencil-square"></i> Edit
@@ -124,7 +163,7 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <tr><td colspan="14" class="text-center">No rooms found.</td></tr>
+                                    <tr><td colspan="15" class="text-center">No rooms found.</td></tr>
                                 <?php endif; ?>
                                 </tbody>
                             </table>
@@ -144,17 +183,6 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
                                 <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
                                     <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageRooms&page=<?= min($totalPages, $currentPage + 1) ?>">Next</a>
                                 </li>
-                                <li class="page-item ms-2">
-                                    <form method="get" action="<?= BASE_URL ?>/admin.php" class="d-flex">
-                                        <input type="hidden" name="action" value="manageRooms">
-                                        <select name="page" class="form-select form-select-sm me-1">
-                                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                                <option value="<?= $i ?>" <?= ($i === $currentPage) ? 'selected' : '' ?>>Page <?= $i ?></option>
-                                            <?php endfor; ?>
-                                        </select>
-                                        <button type="submit" class="btn btn-sm btn-primary">Go</button>
-                                    </form>
-                                </li>
                             </ul>
                         </nav>
 
@@ -163,6 +191,7 @@ $perPage     = (int)($results['perPage'] ?? count($rooms));
 
             </div>
         </div>
+
         <?php include __DIR__ . "/../include/footer.php"; ?>
     </div>
 </div>

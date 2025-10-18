@@ -1,5 +1,6 @@
 <?php
 // /templates/rooms/edit_room.php
+// Edit Room Form with dynamic grouped facilities (no DB change)
 
 require_once __DIR__ . '/../../config/config.php';
 ?>
@@ -82,21 +83,30 @@ require_once __DIR__ . '/../../config/config.php';
                                 <textarea name="description" class="form-control" rows="3"><?= htmlspecialchars($results['room']['description'] ?? '') ?></textarea>
                             </div>
 
-                            <!-- Price Section -->
+                            <!-- Price -->
                             <div class="form-group mb-3">
                                 <label>Base Price per Night:</label>
                                 <input type="number" step="0.01" name="base_price_per_night" class="form-control" min="0" required value="<?= htmlspecialchars($results['room']['base_price_per_night'] ?? '') ?>">
                             </div>
 
-                            <!-- GST Dropdown -->
+                            <!-- GST -->
                             <div class="form-group mb-3">
-                                <label>GST % <i class="fas fa-info-circle" title="Goods and Services Tax applicable"></i>:</label>
+                                <label>GST %:</label>
                                 <select name="gst_percent" class="form-control">
                                     <?php foreach ([0,5,12,18] as $gst): ?>
                                         <option value="<?= $gst ?>" <?= ($results['room']['gst_percent']==$gst)?'selected':'' ?>><?= $gst ?>%</option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+
+			    <!-- GST Inclusive / Exclusive -->
+			    <div class="form-group mb-3">
+   				<label>GST Type</label>
+    				<select name="gst_inclusive" class="form-control">
+        			<option value="exclusive" <?= (($results['room']['gst_inclusive'] ?? 'exclusive') === 'exclusive') ? 'selected' : ''; ?>>Exclusive</option>
+        			<option value="inclusive" <?= (($results['room']['gst_inclusive'] ?? 'exclusive') === 'inclusive') ? 'selected' : ''; ?>>Inclusive</option>
+    				</select>
+				</div>
 
                             <!-- Total Inventory -->
                             <div class="form-group mb-3">
@@ -111,7 +121,7 @@ require_once __DIR__ . '/../../config/config.php';
                                 <textarea name="notes" class="form-control" rows="2"><?= htmlspecialchars($results['room']['notes'] ?? '') ?></textarea>
                             </div>
 
-                            <!-- Terms & Conditions -->
+                            <!-- Terms -->
                             <div class="form-group mb-3">
                                 <label>Terms & Conditions:</label>
                                 <textarea name="terms_conditions" class="form-control" rows="2"><?= htmlspecialchars($results['room']['terms_conditions'] ?? '') ?></textarea>
@@ -136,7 +146,7 @@ require_once __DIR__ . '/../../config/config.php';
                                 'Policies' => ['Pet Friendly','Smoking Allowed','Non-Smoking Room']
                             ];
 
-                            // Load facility_id + icon from DB
+                            // Load all facilities from DB
                             $stmt = $pdo->query("SELECT facility_id, name, icon FROM facilities ORDER BY name ASC");
                             $facilityMap = [];
                             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -145,6 +155,9 @@ require_once __DIR__ . '/../../config/config.php';
                                     'icon' => $row['icon']
                                 ];
                             }
+
+                            // Preselected facilities for this room
+                            $selectedFacilities = $results['facilities_selected'] ?? [];
                             ?>
 
                             <div class="form-group mb-4">
@@ -156,14 +169,17 @@ require_once __DIR__ . '/../../config/config.php';
                                             <?php
                                             $fid = $facilityMap[$facilityName]['id'] ?? null;
                                             $icon = $facilityMap[$facilityName]['icon'] ?? 'fa-circle';
-                                            if (!$fid) continue; // Skip missing facility
-                                            $checked = (isset($results['facilities_selected']) && in_array($fid, $results['facilities_selected'])) ? 'checked' : '';
+                                            if (!$fid) continue;
+                                            $checked = in_array($fid, $selectedFacilities) ? 'checked' : '';
                                             ?>
-                                            <div class="col-md-4">
+                                            <div class="col-md-4 mb-2">
                                                 <div class="form-check">
-                                                    <input type="checkbox" class="form-check-input" name="facilities[]" value="<?= $fid ?>" id="facility<?= $fid ?>" <?= $checked ?>>
+                                                    <input type="checkbox" class="form-check-input"
+                                                        name="facilities[]" value="<?= $fid ?>"
+                                                        id="facility<?= $fid ?>" <?= $checked ?>>
                                                     <label class="form-check-label" for="facility<?= $fid ?>">
-                                                        <i class="fas <?= htmlspecialchars($icon) ?>"></i> <?= htmlspecialchars($facilityName) ?>
+                                                        <i class="fas <?= htmlspecialchars($icon) ?>"></i>
+                                                        <?= htmlspecialchars($facilityName) ?>
                                                     </label>
                                                 </div>
                                             </div>
@@ -182,7 +198,7 @@ require_once __DIR__ . '/../../config/config.php';
                                 </select>
                             </div>
 
-                            <!-- Submit Button -->
+                            <!-- Submit Buttons -->
                             <button type="submit" class="btn btn-primary">Update Room</button>
                             <a href="<?= BASE_URL ?>/admin.php?action=manageRooms" class="btn btn-secondary">Cancel</a>
                         </form>
