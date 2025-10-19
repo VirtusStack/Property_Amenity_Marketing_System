@@ -79,6 +79,13 @@ $offset      = ($currentPage - 1) * $perPage;
                                         <th>Lifeguard</th>
                                         <th>Opening Time</th>
                                         <th>Closing Time</th>
+					<th>Access Type</th>
+					<th>Max Charge</th>
+            				<th>Price per Hour</th>
+            				<th>Price per Day</th>
+            				<th>Safety Rules</th>
+            				<th>Terms & Conditions</th>
+            				<th>Instructions</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -96,6 +103,13 @@ $offset      = ($currentPage - 1) * $perPage;
                                                 <td><?= $pool['lifeguard_available'] ? 'Yes' : 'No' ?></td>
                                                 <td><?= htmlspecialchars($pool['opening_time'] ?? '-') ?></td>
                                                 <td><?= htmlspecialchars($pool['closing_time'] ?? '-') ?></td>
+						<td><?= htmlspecialchars($pool['access_type'] ?? '-') ?></td>
+            					<td><?= htmlspecialchars($pool['max_charge'] ?? '-') ?></td>
+           					<td><?= htmlspecialchars($pool['price_per_hour'] ?? '-') ?></td>
+           					<td><?= htmlspecialchars($pool['price_per_day'] ?? '-') ?></td>
+           					<td><?= htmlspecialchars($pool['safety_rules'] ?? '-') ?></td>
+           					<td><?= htmlspecialchars($pool['terms_conditions'] ?? '-') ?></td>
+            					<td><?= htmlspecialchars($pool['instructions'] ?? '-') ?></td>
                                                 <td>
                                                     <!-- Edit button -->
                                                     <a class="btn btn-sm btn-warning" 
