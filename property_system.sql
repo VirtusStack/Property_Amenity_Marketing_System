@@ -242,6 +242,8 @@ INSERT INTO `parking` (`parking_id`, `location_id`, `parking_name`, `parking_num
 (1, 1, 'Front Parking', 'P001', 'MH12AB3456', 'Car', 20, 0, 1, 'Available', 'Open car parking near entrance', '2025-10-18 11:15:56', '2025-10-16 11:15:56'),
 (2, 1, 'Basement Parking', 'P002', NULL, 'Car', 30, 1, 0, 'Available', 'Covered basement parking area', '2025-10-18 11:15:56', '2025-10-16 11:15:56'),
 (3, 2, 'Bike Zone', 'P003', 'MH14XY9876', 'Bike', 15, 0, 0, 'Full', 'Dedicated bike parking area', '2025-10-18 11:15:56', '2025-10-18 11:15:56');
+(4, 1, 'Basement Parking', 'P004', 'MH14XY9844', 'Car', 25, 1, 1, 'Available', '', '2025-10-19 07:11:22', '2025-10-19 07:32:31'),
+(5, 2, 'Basement Parking', 'P005', 'MH14XY3453', 'Bus', 35, 0, 1, 'Available', '', '2025-10-19 07:28:26', '2025-10-19 07:33:06');
 
 -- --------------------------------------------------------
 
@@ -518,7 +520,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `company_id`, `location_id`, `name`, `email`, `password`, `role_id`, `created_by`, `created_at`) VALUES
-(1, 1, 1, 'Roman Roy', 'roman@example.com', '$2y$10$fHJ0wvrXNLHEfVOT/17qDOyWQ76hDEutVi90zJTly446CMzQsp9zq', 1, NULL, '2025-09-22 03:17:08'),
+(1, 1, 1, 'Roman Roy', 'roman@example.com', '$2y$10$fHJ0wvrXNLHEfVOT/17qDOyWQ76hDEutVi90zJTly446CMzQsp9zq', 1, NULL, '2025-09-27 03:17:08'),
 (2, 1, NULL, 'Roman Roy', 'roman@12.com', '$2y$10$L6QmixQ9KVYVHLx/uDDg0.45JVo/9cPvhlknPbFZpUCC7ewcubpYW', 1, NULL, '2025-09-21 21:47:08');
 
 --
