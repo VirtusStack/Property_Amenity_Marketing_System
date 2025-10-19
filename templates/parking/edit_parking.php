@@ -61,7 +61,6 @@ require_once __DIR__ . '/../../config/config.php';
         			</option>
     				<?php endforeach; ?>
 				</select>
-
                             </div>
 
 
@@ -118,18 +117,19 @@ require_once __DIR__ . '/../../config/config.php';
                                 </select>
                             </div>
 
-                            <!-- Status -->
+                           <!-- Status -->
                             <div class="form-group mb-3">
                                 <label>Status:</label>
                                 <select name="status" class="form-control">
-                                    <option value="active" <?= (isset($results['parking']['status']) && $results['parking']['status'] == 'active') ? 'selected' : '' ?>>Active</option>
-                                    <option value="inactive" <?= (isset($results['parking']['status']) && $results['parking']['status'] == 'inactive') ? 'selected' : '' ?>>Inactive</option>
+                                    <option value="Available" <?= (isset($results['status']) && $results['status'] == 'Available') ? 'selected' : '' ?>>Available</option>
+                                    <option value="Full" <?= (isset($results['status']) && $results['status'] == 'Full') ? 'selected' : '' ?>>Full</option>
+                                    <option value="Maintenance" <?= (isset($results['status']) && $results['status'] == 'Maintenance') ? 'selected' : '' ?>>Maintenance</option>
                                 </select>
                             </div>
 
                             <!-- Submit & Cancel Buttons -->
                             <button type="submit" class="btn btn-primary">Update Parking</button>
-                            <a href="<?= BASE_URL ?>/admin.php?action=manageParking" class="btn btn-secondary">Cancel</a>
+                            <a href="<?= BASE_URL ?>/admin.php?action=manageParkings" class="btn btn-secondary">Cancel</a>
                         </form>
                     </div>
                 </div>
