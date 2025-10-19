@@ -1202,7 +1202,7 @@ function editSwimmingPool() {
 // ------------------------- 
 // PARKING MANAGEMENT
 // -------------------------
-
+// ADD NEW PARKING
 function newParking() {
     global $pdo;
 
@@ -1212,39 +1212,48 @@ function newParking() {
     }
 
     $results = [
-        'message' => '',
+        'message'   => '',
         'pageTitle' => 'Add New Parking',
         'locations' => Location::getAll($pdo),
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = [
-            'location_id'   => $_POST['location_id'] ?? '',
-            'parking_name'  => trim($_POST['parking_name'] ?? ''),
-            'parking_number'=> trim($_POST['parking_number'] ?? ''),
-            'status'        => $_POST['status'] ?? 'Available',
-            'type'          => $_POST['type'] ?? 'All',
-            'capacity'      => $_POST['capacity'] ?? 0,
-            'description'   => $_POST['description'] ?? '',
+            'location_id'              => $_POST['location_id'] ?? '',
+            'parking_name'             => trim($_POST['parking_name'] ?? ''),
+            'parking_number'           => trim($_POST['parking_number'] ?? ''),
+            'vehicle_number'           => trim($_POST['vehicle_number'] ?? ''),
+            'type'                     => $_POST['type'] ?? 'All',
+            'capacity'                 => $_POST['capacity'] ?? 0,
+            'is_covered'               => $_POST['is_covered'] ?? 0,              
+            'charging_point_available' => $_POST['charging_point_available'] ?? 0, 
+            'status'                   => $_POST['status'] ?? 'Available',
+            'description'              => $_POST['description'] ?? '',
         ];
 
         if (empty($data['location_id']) || empty($data['parking_name'])) {
-            $results['message'] = " Please select location and enter parking name!";
+            $results['message'] = "⚠️ Please select location and enter parking name!";
         } else {
             $stmt = $pdo->prepare("
-                INSERT INTO parking (location_id, parking_name, parking_number, type, capacity, status, description)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO parking 
+                (location_id, parking_name, parking_number, vehicle_number, type, capacity, is_covered, charging_point_available, status, description)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
+
             $added = $stmt->execute([
                 $data['location_id'],
                 $data['parking_name'],
                 $data['parking_number'],
+                $data['vehicle_number'],
                 $data['type'],
                 $data['capacity'],
+                $data['is_covered'],               
+                $data['charging_point_available'], 
                 $data['status'],
                 $data['description']
             ]);
-            $results['message'] = $added ? "✅ Parking added successfully!" : "❌ Error adding parking!";
+
+            $results['message'] = $added ? " Parking added successfully!" : " Error adding parking!";
         }
     }
 
@@ -1273,8 +1282,8 @@ function manageParkings() {
         $id = (int)$_GET['delete'];
         $stmt = $pdo->prepare("DELETE FROM parking WHERE parking_id=?");
         $results['message'] = $stmt->execute([$id])
-            ? "✅ Parking deleted!"
-            : "❌ Error deleting parking!";
+            ? " Parking deleted!"
+            : " Error deleting parking!";
     }
 
     // Pagination
@@ -1291,7 +1300,7 @@ function manageParkings() {
         SELECT p.*, l.location_name
         FROM parking p
         LEFT JOIN locations l ON p.location_id = l.location_id
-        ORDER BY p.parking_id DESC
+        ORDER BY p.parking_id ASC
         LIMIT :limit OFFSET :offset
     ");
     $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
@@ -1318,13 +1327,17 @@ function editParking() {
         die("❌ You don't have access to the Parking module. Please contact admin.");
     }
 
-    if (!isset($_GET['id'])) die(" No parking ID given.");
+    if (!isset($_GET['id'])) die("No parking ID given.");
     $id = (int)$_GET['id'];
 
+    // Fetch parking details
     $stmt = $pdo->prepare("SELECT * FROM parking WHERE parking_id=?");
     $stmt->execute([$id]);
     $parking = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    if (!$parking) die("Parking record not found.");
+
+    // Prepare results for template
     $results = [
         'pageTitle' => 'Edit Parking',
         'parking'   => $parking,
@@ -1332,39 +1345,48 @@ function editParking() {
         'message'   => ''
     ];
 
+    // Handle form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = [
-            'location_id'   => $_POST['location_id'] ?? '',
-            'parking_name'  => trim($_POST['parking_name'] ?? ''),
-            'parking_number'=> trim($_POST['parking_number'] ?? ''),
-            'status'        => $_POST['status'] ?? 'Available',
-            'type'          => $_POST['type'] ?? 'All',
-            'capacity'      => $_POST['capacity'] ?? 0,
-            'description'   => $_POST['description'] ?? '',
+            'location_id'              => $_POST['location_id'] ?? '',
+            'parking_name'             => trim($_POST['parking_name'] ?? ''),
+            'parking_number'           => trim($_POST['parking_number'] ?? ''),
+            'type'                     => $_POST['type'] ?? 'All',
+            'capacity'                 => $_POST['capacity'] ?? 0,
+            'is_covered'               => $_POST['is_covered'] ?? 0,
+            'charging_point_available' => $_POST['charging_point_available'] ?? 0,
+            'status'                   => $_POST['status'] ?? 'Available',
+            'description'              => $_POST['description'] ?? ''
         ];
 
+        //  Update query includes both "is_covered" and "charging_point_available"
         $stmt = $pdo->prepare("
             UPDATE parking
-            SET location_id=?, parking_name=?, parking_number=?, type=?, capacity=?, status=?, description=?, updated_at=CURRENT_TIMESTAMP
+            SET location_id=?, parking_name=?, parking_number=?, type=?, capacity=?, 
+                is_covered=?, charging_point_available=?, 
+                status=?, description=?, updated_at=CURRENT_TIMESTAMP
             WHERE parking_id=?
         ");
+
         $ok = $stmt->execute([
             $data['location_id'],
             $data['parking_name'],
             $data['parking_number'],
             $data['type'],
             $data['capacity'],
+            $data['is_covered'],
+            $data['charging_point_available'],
             $data['status'],
             $data['description'],
             $id
         ]);
 
-        $results['message'] = $ok ? "✅ Parking updated successfully!" : "❌ Error updating parking!";
+        $results['message'] = $ok ? " Parking updated successfully!" : " Error updating parking!";
     }
 
+    // Load edit template
     require(TEMPLATE_PATH . "/parking/edit_parking.php");
 }
-
 
 // -------------------------
 // ROLE MANAGEMENT
