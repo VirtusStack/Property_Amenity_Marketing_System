@@ -908,12 +908,12 @@ function newRestaurant() {
             $results['message'] = " Please fill in all required fields!";
         } else {
             if (Restaurant::register($pdo, $data['location_id'], $data['menu_date'], $data['meal_type'], $data['menu_name'], $data['no_of_dishes'], $data['base_price'], $data['description'], $data['status'])) {
-                $results['message'] = "✅ Restaurant/Menu added successfully!";
+                $results['message'] = " Restaurant/Menu added successfully!";
                 foreach(['location_id','menu_date','meal_type','menu_name','no_of_dishes','base_price','description','status'] as $f) {
                     $results[$f] = '';
                 }
             } else {
-                $results['message'] = "❌ Error adding restaurant/menu!";
+                $results['message'] = " Error adding restaurant/menu!";
             }
         }
     }
@@ -943,8 +943,8 @@ function manageRestaurants() {
     if (isset($_GET['delete'])) {
         $restaurantId = (int)$_GET['delete'];
         $results['message'] = Restaurant::delete($pdo, $restaurantId)
-            ? "✅ Restaurant/Menu deleted successfully!"
-            : "❌ Error deleting restaurant/menu!";
+            ? "Restaurant/Menu deleted successfully!"
+            : " Error deleting restaurant/menu!";
     }
 
     $perPage = 25;
@@ -1011,10 +1011,10 @@ function editRestaurant() {
         ];
 
         if (Restaurant::update($pdo, $restaurantId, $data)) {
-            $results['message'] = "✅ Restaurant/Menu updated successfully!";
+            $results['message'] = " Restaurant/Menu updated successfully!";
             $results['restaurant'] = Restaurant::getById($pdo, $restaurantId); // refresh
         } else {
-            $results['message'] = "❌ Error updating restaurant/menu!";
+            $results['message'] = " Error updating restaurant/menu!";
         }
     }
 
