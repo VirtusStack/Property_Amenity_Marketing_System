@@ -136,7 +136,7 @@ if ($location_id && isset($pdo)) {
       <?php foreach ($enabledPlugins as $plugin): ?>
           <?php 
           $pluginName = htmlspecialchars($plugin['name']);
-          $pluginKey  = strtolower(str_replace(' ', '', $plugin['name']));
+          $pluginKey  = str_replace(' ', '', ucwords(strtolower($plugin['name'])));
           $icon = $icons[$plugin['name']] ?? 'fa-plug';
           ?>
           <li class="nav-item">
