@@ -114,7 +114,7 @@ class SwimmingPool {
     }
 
     // -------------------------
-    // DELETE swimming pool (hard delete)
+    // DELETE swimming pool 
     // -------------------------
     public static function delete($pdo, $id) {
         try {
