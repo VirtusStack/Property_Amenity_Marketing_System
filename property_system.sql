@@ -5,7 +5,71 @@
 
 --
 -- Table structure for table `companies`
+---
+
+CREATE TABLE `areas` (
+  `area_id` int(11) NOT NULL,
+  `location_id` int(11) NOT NULL,
+  `area_name` varchar(150) NOT NULL,
+  `plugin_type` enum('spa','play_area','gym','banquet_hall','conference_room') NOT NULL,
+  `description` text DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
+-- Dumping data for table `areas`
+--
+
+INSERT INTO `areas` (`area_id`, `location_id`, `area_name`, `plugin_type`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Tranquil Spa', 'spa', 'Relaxing body spa and therapy zone', 'active', '2025-10-25 05:12:05', '2025-10-25 05:28:36'),
+(2, 1, 'Infinity Gym', 'gym', 'Fully equipped fitness area with trainer', 'active', '2025-10-25 05:12:05', '2025-10-25 05:12:05'),
+(3, 1, 'Banquet Elegance Hall', 'banquet_hall', 'Premium indoor banquet for events', 'active', '2025-10-25 05:12:05', '2025-10-25 05:12:05'),
+(4, 2, 'Sunshine Play Area', 'play_area', 'Kids entertainment and fun area', 'active', '2025-10-25 05:12:03', '2025-10-25 05:12:05'),
+(5, 2, 'Lotus Conference Room', 'conference_room', 'Corporate meeting and seminar hall', 'active', '2025-10-25 11:32:15', '2025-10-25 11:32:15'),
+(6, 2, 'Aqua Spa', 'spa', 'Luxury massage and facial spa', 'active', '2025-10-26 11:40:05', '2025-10-26 11:40:05'),
+(7, 3, 'Skyline Gym', 'gym', 'High-rise fitness zone with trainer support', 'active', '2025-10-26 01:21:06', '2025-10-26 01:21:05'),
+(8, 3, 'Royal Banquet', 'banquet_hall', 'Elegant banquet hall for functions', 'active', '2025-10-26 05:12:06', '2025-10-26 05:12:05'),
+(9, 3, 'Galaxy Play Zone', 'play_area', 'Children-friendly gaming area', 'active', '2025-10-26 06:12:25', '2025-10-26 06:12:25'),
+(10, 3, 'Ocean View Conference', 'conference_room', 'Sea-view meeting and presentation room', 'active', '2025-10-27 04:12:55', '2025-10-27 04:12:55');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `area_tickets`
+--
+
+CREATE TABLE `area_tickets` (
+  `ticket_id` int(11) NOT NULL,
+  `area_id` int(11) NOT NULL,
+  `member_type` enum('member','non_member') DEFAULT 'non_member',
+  `customer_name` varchar(100) NOT NULL,
+  `customer_mobile` varchar(15) NOT NULL,
+  `customer_email` varchar(100) DEFAULT NULL,
+  `ticket_number` varchar(50) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT 0.00,
+  `status` enum('active','cancelled') DEFAULT 'active',
+  `booking_date` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `area_tickets`
+--
+
+INSERT INTO `area_tickets` (`ticket_id`, `area_id`, `member_type`, `customer_name`, `customer_mobile`, `customer_email`, `ticket_number`, `price`, `status`, `booking_date`) VALUES
+(1, 1, 'member', 'Ravi Sharma', '9876500011', 'ravi@example.com', 'TKT2025-0001', 700.00, 'active', '2025-10-27 10:42:52'),
+(2, 2, 'non_member', 'Priya Verma', '9876500012', 'priya@example.com', 'TKT2025-0002', 500.00, 'active', '2025-10-27 10:42:52'),
+(3, 3, 'member', 'Amit Singh', '9876500013', 'amit@example.com', 'TKT2025-0003', 1200.00, 'active', '2025-10-27 10:42:52'),
+(4, 4, 'non_member', 'Karan Joshi', '9876500014', 'karan@example.com', 'TKT2025-0004', 300.00, 'cancelled', '2025-10-27 10:42:52'),
+(5, 5, 'member', 'Divya Kapoor', '9876500015', 'divya@example.com', 'TKT2025-0005', 1000.00, 'active', '2025-10-28 12:22:12'),
+(6, 6, 'non_member', 'Sneha Agarwal', '9876500016', 'sneha@example.com', 'TKT2025-0006', 700.00, 'active', '2025-10-28 12:42:32'),
+(7, 7, 'member', 'Ankit Patel', '9876500017', 'ankit@example.com', 'TKT2025-0007', 450.00, 'active', '2025-10-28 04:02:12'),
+(8, 8, 'non_member', 'Komal Jain', '9876500018', 'komal@example.com', 'TKT2025-0008', 900.00, 'cancelled', '2025-10-28 05:19:52'),
+(9, 9, 'member', 'Neha Rana', '9876500019', 'neha@example.com', 'TKT2025-0009', 600.00, 'active', '2025-10-29 10:42:52'),
+(10, 10, 'non_member', 'Arjun Desai', '9876500020', 'arjun@example.com', 'TKT2025-0010', 550.00, 'active', '2025-10-29 10:52:22'),
+(11, 4, 'non_member', 'Pravin Roy', '5678909032', 'pravin@example.com', 'TKT2025-0011', 250.00, 'active', '2025-10-29 14:46:40');
+-
 
 CREATE TABLE `companies` (
   `company_id` int(11) NOT NULL,
@@ -209,8 +273,8 @@ INSERT INTO `location_plugins` (`id`, `location_id`, `plugin_id`, `is_enabled`, 
 (1, 1, 1, 1, '2025-10-18 05:37:15', '2025-10-15 09:38:21'),
 (2, 1, 2, 1, '2025-10-18 05:37:15', '2025-10-15 12:06:15'),
 (3, 1, 3, 0, '2025-10-18 05:37:15', '2025-10-16 12:49:53'),
-(4, 1, 4, 0, '2025-10-18 05:37:15', '2025-10-16 10:29:23'),
-(5, 1, 5, 1, '2025-10-18 05:37:15', '2025-10-16 12:49:51');
+(7, 1, 6, 1, '2025-10-25 13:05:29', '2025-10-29 13:05:29'),
+(8, 1, 7, 1, '2025-10-27 05:00:19', '2025-10-29 06:21:59');
 
 -- --------------------------------------------------------
 
@@ -268,8 +332,9 @@ INSERT INTO `plugin_master` (`plugin_id`, `plugin_name`, `icon`, `description`, 
 (1, 'Restaurant', 'fa-utensils', 'Manage menus, food and buffet options', 'active', '2025-10-15 10:50:24'),
 (2, 'Swimming Pool', 'fa-swimmer', 'Manage swimming pool timing and capacity', 'active', '2025-10-16 10:50:24'),
 (3, 'Parking', 'fa-parking', 'Manage parking area and vehicle slots', 'active', '2025-10-17 10:50:24'),
-(4, 'Spa', 'fa-spa', 'Manage spa facilities and bookings', 'active', '2025-10-17 10:50:24'),
-(5, 'Gym', 'fa-dumbbell', 'Manage gym facilities and memberships', 'active', '2025-10-17 10:50:24');
+(6, 'Area', 'fa-building', 'Manage all areas like Spa, Gym, Banquet Hall, etc.', 'active', '2025-10-25 12:45:33'),
+(7, 'Area Ticket', 'fa-ticket-alt', 'Handles ticket booking for areas (Spa, Gym, Banquet Hall, etc.)', 'active', '2025-10-27 10:10:55');
+
 
 -- --------------------------------------------------------
 
@@ -524,8 +589,17 @@ INSERT INTO `users` (`user_id`, `company_id`, `location_id`, `name`, `email`, `p
 (2, 1, NULL, 'Roman Roy', 'roman@12.com', '$2y$10$L6QmixQ9KVYVHLx/uDDg0.45JVo/9cPvhlknPbFZpUCC7ewcubpYW', 1, NULL, '2025-09-21 21:47:08');
 
 --
--- Indexes for dumped tables
+-ALTER TABLE `areas`
+  ADD PRIMARY KEY (`area_id`),
+  ADD KEY `location_id` (`location_id`);
+
 --
+-- Indexes for table `area_tickets`
+--
+ALTER TABLE `area_tickets`
+  ADD PRIMARY KEY (`ticket_id`),
+  ADD UNIQUE KEY `ticket_number` (`ticket_number`),
+  ADD KEY `fk_area_id` (`area_id`);
 
 --
 -- Indexes for table `companies`
@@ -617,6 +691,18 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `areas`
+--
+ALTER TABLE `areas`
+  MODIFY `area_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `area_tickets`
+--
+ALTER TABLE `area_tickets`
+  MODIFY `ticket_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT for table `companies`
 --
 ALTER TABLE `companies`
@@ -638,19 +724,19 @@ ALTER TABLE `locations`
 -- AUTO_INCREMENT for table `location_plugins`
 --
 ALTER TABLE `location_plugins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `parking`
 --
 ALTER TABLE `parking`
-  MODIFY `parking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `parking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `plugin_master`
 --
 ALTER TABLE `plugin_master`
-  MODIFY `plugin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `plugin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `restaurants`
@@ -685,6 +771,18 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `areas`
+--
+ALTER TABLE `areas`
+  ADD CONSTRAINT `areas_ibfk_1` FOREIGN KEY (`location_id`) REFERENCES `locations` (`location_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `area_tickets`
+--
+ALTER TABLE `area_tickets`
+  ADD CONSTRAINT `fk_area_tickets_area` FOREIGN KEY (`area_id`) REFERENCES `areas` (`area_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `locations`
