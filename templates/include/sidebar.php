@@ -129,8 +129,8 @@ if ($location_id && isset($pdo)) {
           'Swimming Pool' => 'fa-swimmer',
           'Parking' => 'fa-parking',
           'Spa' => 'fa-spa',
-          'Gym' => 'fa-dumbbell',
-          'Play Area' => 'fa-child'
+          'Area' => 'fa-building',
+	  'Area Ticket' => 'fa-ticket-alt' 
       ];
       ?>
       <?php foreach ($enabledPlugins as $plugin): ?>
