@@ -17,6 +17,8 @@ require_once __DIR__ . "/classes/Plugin.php";
 require_once __DIR__ . '/classes/Restaurant.php';
 require_once __DIR__ . '/classes/SwimmingPool.php';
 require_once __DIR__ . "/classes/Parking.php";
+require_once __DIR__ . "/classes/Area.php";
+require_once __DIR__ . "/classes/AreaTicket.php";
 
 // -------------------------
 // AUTO-LOGIN USING REMEMBER ME COOKIE
@@ -167,6 +169,35 @@ case 'editParking':
     editParking();
     break;
 
+// AREA MANAGEMENT
+case 'newArea':
+    newArea();
+    break;
+
+case 'manageAreas':
+    manageAreas();
+    break;
+
+case 'editArea':
+    editArea();
+    break;
+
+// Area Ticket management
+case 'newAreaTicket':
+    newAreaTicket();
+    break;
+
+case 'manageAreaTickets':
+    manageAreaTickets();
+    break;
+
+case 'editAreaTicket':
+    editAreaTicket();
+    break;
+
+case 'viewAreaTicket':
+    viewAreaTicket();
+    break;
 
 // Role management
     case 'newRole':
@@ -1387,6 +1418,420 @@ function editParking() {
     // Load edit template
     require(TEMPLATE_PATH . "/parking/edit_parking.php");
 }
+
+// -------------------------
+// AREA MANAGEMENT
+// -------------------------
+
+// -------------------------
+// ADD NEW AREA
+// -------------------------
+function newArea() {
+    global $pdo;
+
+    // -------------------------
+    // Check plugin access for current location
+    // -------------------------
+    $location_id = $_SESSION['location_id'] ?? null;
+    if (!$location_id || !Plugin::hasAccess($pdo, $location_id, 'Area')) {
+        die("❌ You don't have access to the Area module. Please contact admin.");
+    }
+
+    $results = [
+        'message'   => '',
+        'pageTitle' => 'Add New Area',
+        'locations' => Location::getAll($pdo)
+    ];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = [
+            'location_id'  => $_POST['location_id'] ?? '',
+            'area_name'    => trim($_POST['area_name'] ?? ''),
+            'plugin_type'  => $_POST['plugin_type'] ?? '',
+            'description'  => trim($_POST['description'] ?? ''),
+            'status'       => $_POST['status'] ?? 'active'
+        ];
+
+        if (empty($data['location_id']) || empty($data['area_name'])) {
+            $results['message'] = " Please select location and enter area name!";
+        } else {
+            $newAreaId = Area::add($pdo, $data);
+            if ($newAreaId) {
+                $results['message'] = " Area added successfully!";
+                foreach ($data as $k => $v) $results[$k] = ''; // Clear form
+            } else {
+                $results['message'] = " Error adding area!";
+            }
+        }
+    }
+
+    require(TEMPLATE_PATH . "/area/add_area.php");
+}
+
+
+// -------------------------
+// MANAGE AREAS
+// -------------------------
+function manageAreas() {
+    global $pdo;
+
+    $location_id = $_SESSION['location_id'] ?? null;
+    if (!$location_id || !Plugin::hasAccess($pdo, $location_id, 'Area')) {
+        die("❌ You don't have access to the Area module. Please contact admin.");
+    }
+
+    $results = [
+        'message'   => '',
+        'pageTitle' => 'Manage Areas',
+        'areas'     => []
+    ];
+
+    // -------------------------
+    // DELETE
+    // -------------------------
+    if (isset($_GET['delete'])) {
+        $id = (int)$_GET['delete'];
+        $stmt = $pdo->prepare("DELETE FROM areas WHERE area_id = ?");
+        $results['message'] = $stmt->execute([$id])
+            ? " Area deleted successfully!"
+            : " Error deleting area!";
+    }
+
+    // -------------------------
+    // PAGINATION
+    // -------------------------
+    $perPage = 25;
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    $offset = ($page - 1) * $perPage;
+
+    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM areas");
+    $total = (int)$stmtTotal->fetchColumn();
+    $totalPages = ceil($total / $perPage);
+
+    // -------------------------
+    // FETCH DATA (ORDER BY ID ASC)
+    // -------------------------
+    $stmt = $pdo->prepare("
+        SELECT 
+            a.*, 
+            l.location_name, 
+            c.company_name
+        FROM areas a
+        LEFT JOIN locations l ON a.location_id = l.location_id
+        LEFT JOIN companies c ON l.company_id = c.company_id
+        ORDER BY a.area_id ASC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $results['areas'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $results['currentPage'] = $page;
+    $results['totalPages']  = $totalPages;
+    $results['total']       = $total;
+    $results['perPage']     = $perPage;
+
+    // -------------------------
+    // TEMPLATE
+    // -------------------------
+    require(TEMPLATE_PATH . "/area/manage_area.php");
+}
+
+
+// -------------------------
+// EDIT AREA
+// -------------------------
+function editArea() {
+    global $pdo;
+
+    // -------------------------
+    // Check plugin access
+    // -------------------------
+    $location_id = $_SESSION['location_id'] ?? null;
+    if (!$location_id || !Plugin::hasAccess($pdo, $location_id, 'Area')) {
+        die("❌ You don't have access to the Area module. Please contact admin.");
+    }
+
+    $results = ['message' => '', 'pageTitle' => 'Edit Area'];
+
+    if (!isset($_GET['id'])) die(" No area ID provided.");
+    $area_id = (int)$_GET['id'];
+
+    // Fetch area
+    $area = Area::getById($pdo, $area_id);
+    if (!$area) die(" Area not found.");
+
+    // Handle form submission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = [
+            'location_id'  => $_POST['location_id'] ?? '',
+            'area_name'    => trim($_POST['area_name'] ?? ''),
+            'plugin_type'  => $_POST['plugin_type'] ?? '',
+            'description'  => trim($_POST['description'] ?? ''),
+            'status'       => $_POST['status'] ?? 'active'
+        ];
+
+        if (Area::update($pdo, $area_id, $data)) {
+            $results['message'] = " Area updated successfully!";
+            $area = Area::getById($pdo, $area_id); // Refresh updated data
+        } else {
+            $results['message'] = " Error updating area!";
+        }
+    }
+
+    $results['area'] = $area;
+    $results['locations'] = Location::getAll($pdo);
+
+    require(TEMPLATE_PATH . "/area/edit_area.php");
+}
+
+// AREA TICKET MANAGEMENT
+// NEW AREA TICKET
+function newAreaTicket() {
+    global $pdo;
+
+    // Check plugin access
+    
+    $location_id = $_SESSION['location_id'] ?? null;
+    if (!$location_id || !Plugin::hasAccess($pdo, $location_id, 'Area')) {
+        die("❌ You don't have access to the Area module. Please contact admin.");
+    }
+
+    $results = [
+        'pageTitle' => 'Add Area Ticket',
+        'message'   => '',
+        'locations' => [],
+        'areas'     => []
+    ];
+
+    // -------------------------
+    // Load location & area dropdown data
+    // -------------------------
+    $results['locations'] = Location::getAll($pdo);
+    $results['areas'] = Area::getAll($pdo); // from your Area.php class
+
+    // -------------------------
+    // Handle form submission
+    // -------------------------
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = [
+            'area_id'         => $_POST['area_id'] ?? '',
+            'member_type'     => $_POST['member_type'] ?? 'non_member',
+            'customer_name'   => trim($_POST['customer_name'] ?? ''),
+            'customer_mobile' => trim($_POST['customer_mobile'] ?? ''),
+            'customer_email'  => trim($_POST['customer_email'] ?? ''),
+            'price'           => $_POST['price'] ?? 0,
+            'status'          => $_POST['status'] ?? 'active'
+        ];
+
+        // -------------------------
+        // Validation
+        // -------------------------
+        if (empty($data['area_id']) || empty($data['customer_name']) || empty($data['customer_mobile'])) {
+            $results['message'] = "⚠️ Please fill all required fields!";
+        }
+        // Prevent duplicate active ticket for same mobile (non-member)
+        elseif ($data['member_type'] == 'non_member' && AreaTicket::hasActiveTicket($pdo, $data['customer_mobile'])) {
+            $results['message'] = "⚠️ This non-member already has an active ticket!";
+        } 
+        else {
+            // -------------------------
+            // Add ticket to database
+            // -------------------------
+            $newTicketId = AreaTicket::add($pdo, $data);
+
+            if ($newTicketId) {
+                //  Redirect to view ticket (auto show printable ticket)
+                header("Location: admin.php?action=viewAreaTicket&id=" . $newTicketId);
+                exit;
+            } else {
+                $results['message'] = " Error creating area ticket!";
+            }
+        }
+    }
+
+    // -------------------------
+    // Load view
+    // -------------------------
+    require(TEMPLATE_PATH . "/area_tickets/add_area_ticket.php");
+}
+
+
+// -------------------------
+// MANAGE AREA TICKETS
+// -------------------------
+function manageAreaTickets() {
+    global $pdo;
+
+    // -------------------------
+    // Check plugin access
+    // -------------------------
+    $location_id = $_SESSION['location_id'] ?? null;
+    if (!$location_id || !Plugin::hasAccess($pdo, $location_id, 'Area Ticket')) {
+        die("❌ You don't have access to the Area Ticket module. Please contact admin.");
+    }
+
+    $results = [
+        'pageTitle' => 'Manage Area Tickets',
+        'message'   => '',
+        'tickets'   => []
+    ];
+
+    // -------------------------
+    // Handle Delete Request
+    // -------------------------
+    if (isset($_GET['delete'])) {
+        $ticket_id = (int)$_GET['delete'];
+        if (AreaTicket::delete($pdo, $ticket_id)) {
+            $results['message'] = " Ticket deleted successfully!";
+        } else {
+            $results['message'] = " Error deleting ticket!";
+        }
+    }
+
+    // -------------------------
+    // Pagination Setup
+    // -------------------------
+    $perPage = 25;
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    $offset = ($page - 1) * $perPage;
+
+    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM area_tickets");
+    $total = (int)$stmtTotal->fetchColumn();
+    $totalPages = max(1, ceil($total / $perPage));
+
+   // -------------------------
+// Fetch Tickets with Area & Location Info
+// -------------------------
+$stmt = $pdo->prepare("
+    SELECT 
+        t.*, 
+        a.area_name, 
+        a.plugin_type AS area_type, 
+        l.location_name
+    FROM area_tickets t
+    LEFT JOIN areas a ON t.area_id = a.area_id
+    LEFT JOIN locations l ON a.location_id = l.location_id
+    ORDER BY t.ticket_id ASC
+    LIMIT :limit OFFSET :offset
+");
+$stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+$results['tickets'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $results['currentPage'] = $page;
+    $results['totalPages']  = $totalPages;
+    $results['total']       = $total;
+    $results['perPage']     = $perPage;
+
+    // -------------------------
+    // Load Manage Tickets Template
+    // -------------------------
+    require(TEMPLATE_PATH . "/area_tickets/manage_area_ticket.php");
+}
+
+// -------------------------
+// EDIT AREA TICKET
+// -------------------------
+function editAreaTicket() {
+    global $pdo;
+
+    // -------------------------
+    // Check plugin access
+    // -------------------------
+    $location_id = $_SESSION['location_id'] ?? null;
+    if (!$location_id || !Plugin::hasAccess($pdo, $location_id, 'Area Ticket')) {
+        die("❌ You don't have access to the Area Ticket module. Please contact admin.");
+    }
+
+    $results = ['message' => '', 'pageTitle' => 'Edit Area Ticket'];
+
+    // -------------------------
+    // Validate ticket ID
+    // -------------------------
+    if (!isset($_GET['id'])) die(" No ticket ID provided.");
+    $ticket_id = (int)$_GET['id'];
+
+    // Fetch current ticket details
+    $ticket = AreaTicket::getById($pdo, $ticket_id);
+    if (!$ticket) die(" Ticket not found.");
+
+    // -------------------------
+    // Handle form submission
+    // -------------------------
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = [
+            'area_id'         => $_POST['area_id'] ?? '',
+            'member_type'     => $_POST['member_type'] ?? 'non_member',
+            'customer_name'   => trim($_POST['customer_name'] ?? ''),
+            'customer_mobile' => trim($_POST['customer_mobile'] ?? ''),
+            'customer_email'  => trim($_POST['customer_email'] ?? ''),
+            'price'           => $_POST['price'] ?? 0,
+            'status'          => $_POST['status'] ?? 'active'
+        ];
+
+        if (empty($data['area_id']) || empty($data['customer_name']) || empty($data['customer_mobile'])) {
+            $results['message'] = "⚠️ Please fill all required fields!";
+        } else {
+            if (AreaTicket::update($pdo, $ticket_id, $data)) {
+                $results['message'] = " Ticket updated successfully!";
+                $ticket = AreaTicket::getById($pdo, $ticket_id); // refresh
+            } else {
+                $results['message'] = " Error updating ticket!";
+            }
+        }
+    }
+
+    // -------------------------
+    // Load related dropdown data
+    // -------------------------
+    $results['ticket'] = $ticket;
+    $results['locations'] = Location::getAll($pdo);
+    $results['areas'] = Area::getAll($pdo);
+
+    // -------------------------
+    // Load edit template
+    // -------------------------
+    require(TEMPLATE_PATH . "/area_tickets/edit_area_ticket.php");
+}
+
+// -------------------------
+// VIEW AREA TICKET
+// -------------------------
+function viewAreaTicket() {
+    global $pdo;
+
+    if (!isset($_GET['id'])) {
+        die("No ticket ID provided!");
+    }
+
+    $ticket_id = (int)$_GET['id'];
+
+    // Fetch ticket details with area + location info
+    $stmt = $pdo->prepare("
+        SELECT 
+            t.*, 
+            a.area_name, 
+            a.plugin_type, 
+            l.location_name 
+        FROM area_tickets t
+        LEFT JOIN areas a ON t.area_id = a.area_id
+        LEFT JOIN locations l ON a.location_id = l.location_id
+        WHERE t.ticket_id = ?
+    ");
+    $stmt->execute([$ticket_id]);
+    $ticket = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $results = [
+        'pageTitle' => 'View Area Ticket',
+        'ticket' => $ticket
+    ];
+
+    require(TEMPLATE_PATH . "/area_tickets/view_area_ticket.php");
+}
+
 
 // -------------------------
 // ROLE MANAGEMENT
