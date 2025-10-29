@@ -50,17 +50,17 @@ require_once __DIR__ . '/../../config/config.php';
                         <!-- Form submits to admin.php?action=editParking&id=XX -->
                         <form method="POST" action="<?= BASE_URL ?>/admin.php?action=editParking&id=<?= htmlspecialchars($results['parking']['parking_id']) ?>">
 
-                            <!-- Location Dropdown -->
+                           <!-- Location Dropdown -->
                             <div class="form-group mb-3">
                                 <label>Location:</label>
                                 <select name="location_id" id="location_id" class="form-control" required>
-    				<option value="">Select Location</option>
-   				 <?php foreach($results['locations'] as $l): ?>
-        			<option value="<?= $l['location_id'] ?>" <?= (isset($results['location_id']) && $results['location_id']==$l['location_id'])?'selected':'' ?>>
-            			<?= htmlspecialchars($l['company_name'] . " → " . $l['location_name']) ?>
-        			</option>
-    				<?php endforeach; ?>
-				</select>
+                                    <option value="">Select Location</option>
+                                    <?php foreach($results['locations'] as $l): ?>
+                                        <option value="<?= $l['location_id'] ?>" <?= ($l['location_id']==$results['parking']['location_id'])?'selected':'' ?>>
+                                            <?= htmlspecialchars($l['company_name'] . " → " . $l['location_name']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
 
 
