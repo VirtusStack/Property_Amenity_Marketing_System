@@ -31,18 +31,21 @@ require_once __DIR__ . '/../../config/config.php';   // Load config + BASE_URL +
                     <?= isset($results['pageTitle']) ? $results['pageTitle'] : 'Edit Role' ?>
                 </h1>
 
-                <!-- ✅ Feedback message -->
+               <!-- Feedback message -->
                 <?php if (!empty($results['message'])): ?>
-                    <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
-                        <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
+                    <div class="alert <?= (stripos($results['message'], 'success') !== false) ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
+                        <?= (stripos($results['message'], 'success') !== false) ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
                         <?= htmlspecialchars($results['message']) ?>
-                      </div>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 <?php endif; ?>
 
                 <!-- Role Form Card -->
                 <div class="card shadow mb-4">
                     <div class="card-body">
-                        <!-- ✅ Form submits back to admin.php -->
+                        <!-- Form submits back to admin.php -->
                         <form method="POST" action="<?= BASE_URL ?>/admin.php?action=editRole&id=<?= $results['role']['role_id'] ?>">
 
                             <!-- Role Name -->
@@ -92,6 +95,7 @@ require_once __DIR__ . '/../../config/config.php';   // Load config + BASE_URL +
 
                             <!-- Submit -->
                             <button type="submit" class="btn btn-primary">Update Role</button>
+			     <a href="<?= BASE_URL ?>/admin.php?action=manageRoles" class="btn btn-secondary">Cancel</a>
                         </form>
                     </div>
                 </div>
