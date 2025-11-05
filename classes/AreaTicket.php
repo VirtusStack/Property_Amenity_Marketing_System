@@ -1,17 +1,13 @@
 <?php
 // /classes/AreaTicket.php
-// -------------------------
 // AreaTicket class: handles ticket booking for members and non-members
 // Used for areas like Spa, Gym, Banquet Hall, Conference Room, etc.
-// -------------------------
 
 class AreaTicket
 {
     const PLUGIN_NAME = 'Area Ticket';
 
-    // -------------------------
     // Check if Area Ticket plugin is enabled for a location
-    // -------------------------
     public static function isEnabled($pdo, $location_id)
     {
         $stmt = $pdo->prepare("
@@ -25,9 +21,7 @@ class AreaTicket
         return $row && $row['is_enabled'] == 1;
     }
 
-    // -------------------------
     // Generate unique ticket number (TKT2025-XXXX)
-    // -------------------------
     private static function generateTicketNumber($pdo)
     {
         $prefix = 'TKT' . date('Y');
@@ -36,9 +30,7 @@ class AreaTicket
         return sprintf("%s-%04d", $prefix, $count);
     }
 
-    // -------------------------
     // CREATE: Add new area ticket
-    // -------------------------
     public static function add($pdo, $data)
     {
         try {
@@ -65,9 +57,7 @@ class AreaTicket
         }
     }
 
-    // -------------------------
     // READ: Get all tickets (Admin or by Location)
-    // -------------------------
     public static function getAll($pdo, $location_id = null)
     {
         $sql = "
@@ -93,9 +83,8 @@ class AreaTicket
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // -------------------------
+
     // READ: Get ticket by ID
-    // -------------------------
     public static function getById($pdo, $ticket_id)
     {
         $stmt = $pdo->prepare("
@@ -113,9 +102,7 @@ class AreaTicket
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // -------------------------
     // UPDATE ticket details
-    // -------------------------
     public static function update($pdo, $ticket_id, $data)
     {
         try {
@@ -141,9 +128,7 @@ class AreaTicket
         }
     }
 
-    // -------------------------
     // DELETE a ticket
-    // -------------------------
     public static function delete($pdo, $ticket_id)
     {
         try {
@@ -155,9 +140,8 @@ class AreaTicket
         }
     }
 
-    // -------------------------
+
     // Check if user already has an active ticket (non-member duplicate prevention)
-    // -------------------------
     public static function hasActiveTicket($pdo, $mobile)
     {
         $stmt = $pdo->prepare("
@@ -168,9 +152,7 @@ class AreaTicket
         return $stmt->fetchColumn() > 0;
     }
 
-    // -------------------------
     // Get ticket details by ticket number (for download/validation)
-    // -------------------------
     public static function getByNumber($pdo, $ticket_number)
     {
         $stmt = $pdo->prepare("
