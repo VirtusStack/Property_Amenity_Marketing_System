@@ -1,8 +1,7 @@
 <?php
 // /templates/area_tickets/view_area_ticket.php
-// -------------------------
 // Compact black & white ticket - professional receipt style
-// -------------------------
+
 require_once __DIR__ . '/../../config/config.php';
 ?>
 <?php include __DIR__ . "/../include/header.php"; ?>
