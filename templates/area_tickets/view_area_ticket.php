@@ -66,7 +66,7 @@ require_once __DIR__ . '/../../config/config.php';
     </div>
 </div>
 
-<!-- ================== PRINT STYLE ================== -->
+<!--  PRINT STYLE -->
 <style>
 /* Compact layout */
 .ticket-box {
