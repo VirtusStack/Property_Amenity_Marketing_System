@@ -29,13 +29,17 @@
                 <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800"><?= $results['pageTitle'] ?></h1>
 
-                <!-- Feedback message -->
-                <?php if (!empty($results['message'])): ?>
-                    <div class="alert <?= strpos($results['message'],'✅')!==false ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
-                     <?= strpos($results['message'],'✅')!==false ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>' ?>
-                        <?= htmlspecialchars($results['message']) ?>
-                                           </div>
-                <?php endif; ?>
+                 <!-- Feedback message -->
+	          <?php if (!empty($results['message'])): ?>
+    		<div class="alert <?= (stripos($results['message'], 'success') !== false) ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show" role="alert">
+       		 <?= (stripos($results['message'], 'success') !== false)  ? '<i class="fas fa-check-circle"></i>'  : '<i class="fas fa-times-circle"></i>' ?>
+      		  <?= htmlspecialchars($results['message']) ?>
+       		 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            	<span aria-hidden="true">&times;</span>
+       		 </button>
+   		 </div>
+		<?php endif; ?>
+
 
                 <!-- User Edit Form Card -->
                 <div class="card shadow mb-4">
@@ -58,8 +62,9 @@
 
                             <!-- Password input -->
                             <div class="mb-3">
-                                <label class="form-label">New Password (leave blank to keep old):</label>
+                                <label class="form-label">New Password :</label>
                                 <input type="password" name="password" class="form-control">
+				<small class="text-muted">Leave blank to keep existing password.</small>
                             </div>
 
                             <!-- Role dropdown -->
@@ -107,6 +112,7 @@
 
                             <!-- Submit button -->
                             <button type="submit" class="btn btn-primary">Update User</button>
+			    <a href="<?= BASE_URL ?>/admin.php?action=manageUsers" class="btn btn-secondary">Cancel</a>
                         </form>
                     </div>
                 </div>
