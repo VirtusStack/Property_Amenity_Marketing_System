@@ -15,7 +15,6 @@ $results = $results ?? [
     'total'       => 0,
     'perPage'     => 25
 ];
-
 $companies   = $results['companies'];
 $currentPage = (int)($results['currentPage'] ?? 1);
 $totalPages  = (int)($results['totalPages'] ?? 1);
@@ -126,43 +125,70 @@ $offset      = ($currentPage - 1) * $perPage;
                             </table>
                         </div>
 
-			<!-- Pagination -->
-			<?php if ($totalPages > 1): ?>
-  			  <nav aria-label="Company pagination">
-        		<ul class="pagination justify-content-center align-items-center">
+		<?php if ($totalPages >= 1): ?>
+  		<nav aria-label="Pagination" class="mt-4">
+    		<ul class="pagination justify-content-center align-items-center">
 
-            		<!-- Previous button -->
-            		<li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-               		 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= max(1, $currentPage - 1) ?>">Previous</a>
-            		</li>
+     		 <!-- Prev Button -->
+     		 <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+        	<a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= max(1, $currentPage - 1) ?>">
+          	  <i class="fas fa-angle-left"></i> Prev
+        	</a>
+      		</li>
 
-           		 <!-- Numbered page buttons -->
-            		<?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                	<li class="page-item <?= ($i === $currentPage) ? 'active' : '' ?>">
-                   	 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= $i ?>"><?= $i ?></a>
-                	</li>
-            		<?php endfor; ?>
+      		<?php
+     		 // Show first page and ellipsis if current page is far from start
+      		if ($currentPage > 3): ?>
+        	<li class="page-item">
+          	<a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=1">1</a>
+        	</li>
+       		 <?php if ($currentPage > 4): ?>
+          	<li class="page-item disabled"><span class="page-link">...</span></li>
+        	 <?php endif; ?>
+      		<?php endif; ?>
 
-            		<!-- Next button -->
-            		<li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-               		 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= min($totalPages, $currentPage + 1) ?>">Next</a>
-            		</li>
+     		 <?php
+      		// Display 2 pages before and after current page
+      		$start = max(1, $currentPage - 2);
+      		$end   = min($totalPages, $currentPage + 2);
+      		for ($i = $start; $i <= $end; $i++): ?>
+       		 <li class="page-item <?= ($i === $currentPage) ? 'active' : '' ?>">
+          	<a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= $i ?>"><?= $i ?></a>
+        	</li>
+      		<?php endfor; ?>
 
-           		 <!-- Dropdown + Go AFTER Next -->
-            		<li class="page-item ms-2">
-                	<form method="get" action="<?= BASE_URL ?>/admin.php" class="d-flex">
-                    	<input type="hidden" name="action" value="manageCompanies">
-                    	<select name="page" class="form-select form-select-sm me-1">
-                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <option value="<?= $i ?>" <?= ($i === $currentPage) ? 'selected' : '' ?>>Page <?= $i ?></option>
-                        <?php endfor; ?>
-                       </select>
-                       <button type="submit" class="btn btn-sm btn-primary">Go</button>
-                      </form>
-                   </li>
-		</ul>
-    	    </nav>
-	<?php endif; ?>
+      		<?php
+      		// Show ellipsis and last page if needed
+      		if ($currentPage < $totalPages - 2):
+        	if ($currentPage < $totalPages - 3): ?>
+          	<li class="page-item disabled"><span class="page-link">...</span></li>
+        	<?php endif; ?>
+        	<li class="page-item">
+         	 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= $totalPages ?>"><?= $totalPages ?></a>
+        	</li>
+     		 <?php endif; ?>
+
+      		<!-- Next Button -->
+      		<li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+       	 	 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageCompanies&page=<?= min($totalPages, $currentPage + 1) ?>">
+         	 Next <i class="fas fa-angle-right"></i>
+        	</a>
+     		 </li>
+
+     		 <!-- Go To Page -->
+      		<li class="page-item ms-3">
+       		 <form method="get" action="<?= BASE_URL ?>/admin.php" class="form-inline">
+          	<input type="hidden" name="action" value="manageCompanies">
+          	<label for="gotoPage" class="mr-2 mb-0">Go to:</label>
+          	<input type="number" min="1" max="<?= $totalPages ?>" name="page" id="gotoPage" class="form-control form-control-sm mr-2" style="width:70px"
+                 value="<?= $currentPage ?>">
+          	<button type="submit" class="btn btn-sm btn-primary">Go</button>
+        	</form>
+      		</li>
+
+   		 </ul>
+  		</nav>
+		<?php endif; ?>
 
                     </div>
                 </div>

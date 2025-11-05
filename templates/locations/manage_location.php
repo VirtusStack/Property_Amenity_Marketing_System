@@ -1,10 +1,7 @@
 <?php
-// -------------------------
 // MANAGE LOCATIONS TEMPLATE
-// -------------------------
 // Displays locations with Edit/Delete actions
 // Includes numbered pagination and a dropdown+Go AFTER the Next button.
-// -------------------------
 
 $results = $results ?? [
     'pageTitle'   => 'Manage Locations',
@@ -122,43 +119,63 @@ $offset      = ($currentPage - 1) * $perPage;
                             </table>
 
                         </div>
-			<!-- Pagination controls -->
-			<nav aria-label="Location pagination">
-    			<ul class="pagination justify-content-center align-items-center">
+			<!-- Pagination -->
+                        <?php if ($totalPages >= 1): ?>
+                            <nav aria-label="Pagination" class="mt-4">
+                                <ul class="pagination justify-content-center align-items-center">
 
-        		<!-- Previous -->
-        		<li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
-           		 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= max(1, $currentPage - 1) ?>">Previous</a>
-        		</li>
+                                    <!-- Prev -->
+                                    <li class="page-item <?= ($currentPage <= 1) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= max(1, $currentPage - 1) ?>">
+                                            <i class="fas fa-angle-left"></i> Prev
+                                        </a>
+                                    </li>
 
-        		<!-- Numbers -->
-        		<?php for ($i = 1; $i <= $totalPages; $i++): ?>
-           		 <li class="page-item <?= ($i === $currentPage) ? 'active' : '' ?>">
-                	<a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= $i ?>"><?= $i ?></a>
-            		</li>
-        		<?php endfor; ?>
+                                    <!-- First + Ellipsis -->
+                                    <?php if ($currentPage > 3): ?>
+                                        <li class="page-item"><a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=1">1</a></li>
+                                        <?php if ($currentPage > 4): ?><li class="page-item disabled"><span class="page-link">...</span></li><?php endif; ?>
+                                    <?php endif; ?>
 
-        		<!-- Next -->
-        		<li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
-           		 <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= min($totalPages, $currentPage + 1) ?>">Next</a>
-        		</li>
+                                    <!-- Middle Pages -->
+                                    <?php
+                                    $start = max(1, $currentPage - 2);
+                                    $end   = min($totalPages, $currentPage + 2);
+                                    for ($i = $start; $i <= $end; $i++): ?>
+                                        <li class="page-item <?= ($i === $currentPage) ? 'active' : '' ?>">
+                                            <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= $i ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor; ?>
 
-        		<!-- Dropdown + Go button (Bootstrap input group) -->
-        		<li class="page-item ms-2">
-            		<div class="input-group input-group-sm">
-                		<select name="page" class="form-select" onchange="this.form.submit()">
-                        	<?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        	<option value="<?= $i ?>" <?= ($i === $currentPage) ? 'selected' : '' ?>>Page <?= $i ?></option>
-                        	<?php endfor; ?>
-                	</select>
-                		<button type="submit" class="btn btn-primary">Go</button>
-            		</div>
-                     </li>
-   	    	</ul>
-      	   </nav>
-		
-      </div>
-    </div>
+                                    <!-- Ellipsis + Last -->
+                                    <?php if ($currentPage < $totalPages - 2): ?>
+                                        <?php if ($currentPage < $totalPages - 3): ?><li class="page-item disabled"><span class="page-link">...</span></li><?php endif; ?>
+                                        <li class="page-item"><a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= $totalPages ?>"><?= $totalPages ?></a></li>
+                                    <?php endif; ?>
+
+                                    <!-- Next -->
+                                    <li class="page-item <?= ($currentPage >= $totalPages) ? 'disabled' : '' ?>">
+                                        <a class="page-link" href="<?= BASE_URL ?>/admin.php?action=manageLocations&page=<?= min($totalPages, $currentPage + 1) ?>">
+                                            Next <i class="fas fa-angle-right"></i>
+                                        </a>
+                                    </li>
+
+                                    <!-- Go To Page -->
+                                    <li class="page-item ms-3">
+                                        <form method="get" action="<?= BASE_URL ?>/admin.php" class="form-inline">
+                                            <input type="hidden" name="action" value="manageLocations">
+                                            <label for="gotoPage" class="mr-2 mb-0">Go to:</label>
+                                            <input type="number" min="1" max="<?= $totalPages ?>" name="page" id="gotoPage"
+                                                   class="form-control form-control-sm mr-2" style="width:70px" value="<?= $currentPage ?>">
+                                            <button type="submit" class="btn btn-sm btn-primary">Go</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+                        <!-- End Pagination -->
+              </div>
+             </div>
              <!-- End of Locations Table Card -->
 
             </div>
