@@ -67,7 +67,7 @@ class User {
         try {
             // Explicitly select needed columns including location_id
             $stmt = $pdo->prepare("
-                SELECT user_id, name, email, role_id, company_id, location_id 
+                SELECT user_id, name, email, password, role_id, company_id, location_id 
                 FROM users 
                 WHERE user_id = ?
             ");
@@ -78,6 +78,7 @@ class User {
             return false;
         }
     }
+
 
     // UPDATE: User details
     public static function update($pdo, $userId, $data) {
