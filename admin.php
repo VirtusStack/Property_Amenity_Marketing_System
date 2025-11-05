@@ -1,8 +1,6 @@
 <?php
 // admin.php → Central Admin Controller
-// ---------------------------
 // Handles Dashboard, Users, Login/Logout, Plugins
-// ---------------------------
 
 session_start(); // Start PHP session
 
@@ -20,7 +18,6 @@ require_once __DIR__ . "/classes/Parking.php";
 require_once __DIR__ . "/classes/Area.php";
 require_once __DIR__ . "/classes/AreaTicket.php";
 
-// -------------------------
 // AUTO-LOGIN USING REMEMBER ME COOKIE
 // -------------------------
 if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_user'])) {
@@ -39,17 +36,13 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_user'])) {
     }
 }
 
-// -------------------------
 // FORCE LOGIN IF NOT LOGGED IN
-// -------------------------
 $action = $_GET['action'] ?? '';
 if (!isset($_SESSION['user_id']) && $action !== 'login') {
     $action = 'login';
 }
 
-// -------------------------
 // FETCH ENABLED PLUGINS FOR CURRENT LOCATION
-// -------------------------
 $enabledPlugins = [];
 $location_id = $_SESSION['location_id'] ?? null;
 if ($location_id && isset($pdo)) {
@@ -213,9 +206,8 @@ case 'viewAreaTicket':
     break;
 }
 
-// -------------------------
+
 // FUNCTIONS
-// -------------------------
 
 function login() {
     global $pdo;
@@ -243,7 +235,7 @@ function login() {
                 header("Location: admin.php?action=dashboard");
                 exit;
             } else {
-                $results['errorMessage'] = "❌ Invalid email or password!";
+                $results['errorMessage'] = " Invalid email or password!";
             }
         } else {
             $results['errorMessage'] = "Please enter both email and password!";
@@ -273,9 +265,9 @@ function dashboard() {
     // Load the dashboard template
     require(TEMPLATE_PATH . "/common/index.php");
 }
-// -------------------------
+
 // USER MANAGEMENT
-// -------------------------
+
 function newUser() {
     global $pdo;
     $results = ['message' => '', 'pageTitle' => 'Add New User'];
@@ -304,18 +296,62 @@ function newUser() {
 
 function manageUsers() {
     global $pdo;
-    $results = ['message' => '', 'pageTitle' => 'Manage Users'];
 
+    $results = [
+        'message'   => '',
+        'pageTitle' => 'Manage Users',
+        'users'     => []
+    ];
+
+    // --- Handle delete request ---
     if (isset($_GET['delete'])) {
         $userId = (int)$_GET['delete'];
         if (User::delete($pdo, $userId)) {
-            $results['message'] = " User deleted!";
+            $results['message'] = "User deleted!";
         } else {
-            $results['message'] = " Error deleting user!";
+            $results['message'] = "Error deleting user!";
         }
     }
 
-    $results['users'] = User::getAll($pdo);
+    // --- Pagination Settings ---
+    $perPage = 25; // users per page
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    $offset = ($page - 1) * $perPage;
+
+    // --- Count total users ---
+    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM users");
+    $total = (int)$stmtTotal->fetchColumn();
+    $totalPages = ceil($total / $perPage);
+
+    // --- Fetch users for current page ---
+   $stmt = $pdo->prepare("
+    SELECT 
+        u.user_id, 
+        u.name, 
+        u.email, 
+        r.role_name, 
+        c.company_name, 
+        l.location_name
+    FROM users u
+    LEFT JOIN roles r ON u.role_id = r.role_id
+    LEFT JOIN companies c ON u.company_id = c.company_id
+    LEFT JOIN locations l ON u.location_id = l.location_id
+    ORDER BY u.user_id ASC
+    LIMIT :limit OFFSET :offset
+");
+
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    $results['users'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // --- Pass pagination info to template ---
+    $results['currentPage'] = $page;
+    $results['totalPages']  = $totalPages;
+    $results['total']       = $total;
+    $results['perPage']     = $perPage;
+
+    // --- Load the template ---
     require(TEMPLATE_PATH . "/users/manage_user.php");
 }
 
@@ -331,14 +367,14 @@ function editUser() {
         $data = [
             'name'       => trim($_POST['name']),
             'email'      => trim($_POST['email']),
-            'password'   => !empty($_POST['password']) ? $_POST['password'] : $user['password'],
+           'password'    => !empty($_POST['password'] ?? '') ? $_POST['password'] : ($user['password'] ?? ''),
             'role_id'    => $_POST['role_id'],
             'company_id' => $_POST['company_id'],
             'location_id'=> $_POST['location_id'] ?? null
         ];
 
         if (User::update($pdo, $userId, $data)) {
-            $results['message'] = " User updated!";
+            $results['message'] = " User updated successfully!";
             $user = User::getById($pdo, $userId);
         } else {
             $results['message'] = " Error updating user!";
@@ -350,6 +386,7 @@ function editUser() {
     $locations = Location::getAll($pdo);
 
     $results['user'] = $user;
+
     require(TEMPLATE_PATH . "/users/edit_user.php");
 }
 
@@ -1180,9 +1217,7 @@ function manageSwimmingPools() {
 function editSwimmingPool() {
     global $pdo;
 
-    // -------------------------
     // Check plugin access
-    // -------------------------
     $location_id = $_SESSION['location_id'] ?? null;
     if (!$location_id || !Plugin::hasAccess($pdo, $location_id, 'Swimming Pool')) {
         die("❌ You don't have access to the Swimming Pool module. Please contact admin.");
@@ -1230,10 +1265,9 @@ function editSwimmingPool() {
     require(TEMPLATE_PATH . "/swimming_pools/edit_swimming_pool.php");
 }
 
-// ------------------------- 
 // PARKING MANAGEMENT
-// -------------------------
 // ADD NEW PARKING
+
 function newParking() {
     global $pdo;
 
@@ -1419,13 +1453,8 @@ function editParking() {
     require(TEMPLATE_PATH . "/parking/edit_parking.php");
 }
 
-// -------------------------
 // AREA MANAGEMENT
-// -------------------------
-
-// -------------------------
 // ADD NEW AREA
-// -------------------------
 function newArea() {
     global $pdo;
 
@@ -1468,7 +1497,6 @@ function newArea() {
     require(TEMPLATE_PATH . "/area/add_area.php");
 }
 
-
 // -------------------------
 // MANAGE AREAS
 // -------------------------
@@ -1486,9 +1514,8 @@ function manageAreas() {
         'areas'     => []
     ];
 
-    // -------------------------
     // DELETE
-    // -------------------------
+
     if (isset($_GET['delete'])) {
         $id = (int)$_GET['delete'];
         $stmt = $pdo->prepare("DELETE FROM areas WHERE area_id = ?");
@@ -1497,9 +1524,7 @@ function manageAreas() {
             : " Error deleting area!";
     }
 
-    // -------------------------
     // PAGINATION
-    // -------------------------
     $perPage = 25;
     $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
     $offset = ($page - 1) * $perPage;
@@ -1508,9 +1533,7 @@ function manageAreas() {
     $total = (int)$stmtTotal->fetchColumn();
     $totalPages = ceil($total / $perPage);
 
-    // -------------------------
-    // FETCH DATA (ORDER BY ID ASC)
-    // -------------------------
+    // FETCH DATA 
     $stmt = $pdo->prepare("
         SELECT 
             a.*, 
@@ -1863,18 +1886,61 @@ function newRole() {
 
 function manageRoles() {
     global $pdo;
-    $results = ['message' => '', 'pageTitle' => 'Manage Roles'];
 
+    $results = [
+        'message'   => '',
+        'pageTitle' => 'Manage Roles',
+        'roles'     => []
+    ];
+
+    // --- Handle delete request ---
     if (isset($_GET['delete'])) {
         $roleId = (int)$_GET['delete'];
         if (Role::delete($pdo, $roleId)) {
-            $results['message'] = " Role deleted!";
+            $results['message'] = "Role deleted successfully!";
         } else {
-            $results['message'] = " Error deleting role!";
+            $results['message'] = "Error deleting role!";
         }
     }
 
-    $results['roles'] = Role::getAll($pdo);
+    // --- Pagination Settings ---
+    $perPage = 25; // roles per page
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    $offset = ($page - 1) * $perPage;
+
+    // --- Count total roles ---
+    $stmtTotal = $pdo->query("SELECT COUNT(*) FROM roles");
+    $total = (int)$stmtTotal->fetchColumn();
+    $totalPages = ceil($total / $perPage);
+
+    // --- Fetch roles for current page ---
+    $stmt = $pdo->prepare("
+        SELECT 
+            r.role_id,
+            r.role_name,
+            r.can_create,
+            r.can_read,
+            r.can_update,
+            r.can_delete,
+            c.company_name
+        FROM roles r
+        LEFT JOIN companies c ON r.company_id = c.company_id
+        ORDER BY r.role_id ASC
+        LIMIT :limit OFFSET :offset
+    ");
+
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+    $results['roles'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // --- Pass pagination info to template ---
+    $results['currentPage'] = $page;
+    $results['totalPages']  = $totalPages;
+    $results['total']       = $total;
+    $results['perPage']     = $perPage;
+
+    // --- Load the template ---
     require(TEMPLATE_PATH . "/roles/manage_roles.php");
 }
 
@@ -1882,7 +1948,7 @@ function editRole() {
     global $pdo;
     $results = ['message' => '', 'pageTitle' => 'Edit Role'];
 
-    if (!isset($_GET['id'])) die("❌ No role ID given.");
+    if (!isset($_GET['id'])) die(" No role ID given.");
     $roleId = (int)$_GET['id'];
     $role   = Role::getById($pdo, $roleId);
 
@@ -1902,7 +1968,7 @@ function editRole() {
         $companyId = $_POST['company_id'] ?? null;
 
         if ($roleName === '') {
-            $results['message'] = "❌ Role name is required!";
+            $results['message'] = " Role name is required!";
         } else {
             if (Role::update($pdo, $roleId, $roleName, $permissions)) {
                 $results['message'] = " Role updated successfully!";
