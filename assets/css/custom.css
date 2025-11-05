@@ -1,0 +1,31 @@
+/* Improve pagination look on small screens */
+@media (max-width: 576px) {
+  nav[aria-label="Pagination"] .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Center Go-to form below page numbers */
+  nav[aria-label="Pagination"] form {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  nav[aria-label="Pagination"] label {
+    font-size: 0.85rem;
+    margin-right: 4px;
+  }
+
+  nav[aria-label="Pagination"] input.form-control-sm {
+    width: 60px;
+    padding: 2px 5px;
+    text-align: center;
+  }
+
+  nav[aria-label="Pagination"] .btn-sm {
+    padding: 3px 8px;
+  }
+}
+
