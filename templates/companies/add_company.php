@@ -46,7 +46,7 @@ require_once __DIR__ . '/../../config/config.php';
                 <!-- Company Form Card -->
                 <div class="card shadow mb-4">
                     <div class="card-body">
-                        <!-- ✅ Form submits to admin.php?action=newCompany -->
+                        <!--  Form submits to admin.php?action=newCompany -->
                         <form method="POST" action="<?= BASE_URL ?>/admin.php?action=newCompany">
 
                             <!-- Company Name -->
