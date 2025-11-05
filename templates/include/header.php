@@ -14,7 +14,10 @@ require_once __DIR__ . '/../../config/config.php';
 
   <!-- SB Admin 2 Styles -->
   <link href="<?= BASE_URL ?>/assets/css/sb-admin-2.min.css" rel="stylesheet">
- 
+  <link href="<?= BASE_URL ?>/assets/css/custom.css" rel="stylesheet">
 
 </head>
 <body id="page-top">
+
+  
+
